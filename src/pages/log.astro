@@ -1,0 +1,68 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const entries = [
+  { date: '2026-06-24', text: 'redesigned yololabs.org — minimalist monospace, interactive terminal, removed the desperate signals' },
+  { date: '2026-06-15', text: 'merged 3 new detection rules to sentinel-detections: LSASS memory access via non-system process, suspicious OAuth app consent, anomalous service principal token issuance' },
+  { date: '2026-06-10', text: 'published "why most zero trust implementations fail"' },
+  { date: '2026-05-30', text: 'presented zero trust migration case study at local infosec meetup. ~40 people, good questions about the legacy app proxying approach' },
+  { date: '2026-05-22', text: 'published "building a security-first azure landing zone in 2026"' },
+  { date: '2026-04-20', text: 'released entra-auditor v0.3 — adds conditional access gap detection and exports to CSV/HTML' },
+  { date: '2026-04-15', text: 'published "kql detection patterns that actually reduce alert fatigue"' },
+  { date: '2026-03-28', text: 'published "tackling entra id permissions sprawl at scale"' },
+  { date: '2026-03-10', text: 'open-sourced azure-secure-alz on github. bicep-based alz with cis benchmark compliance on day 0' },
+  { date: '2026-02-15', text: 'launched yololabs.org. minimal astro site, dark theme, monospace everything' },
+  { date: '2026-01-30', text: 'completed zero trust implementation for the 1,200-user hybrid org. 90-day rollout, zero major incidents' },
+];
+---
+
+<Layout title="Log" description="A running record of what the YoloLabs team has shipped.">
+  <div class="container">
+
+    <div class="page-header">
+      <p class="label">// log</p>
+      <p class="sub">a running record of what we've shipped, published, and done. newest first.</p>
+    </div>
+
+    <ul class="log-list">
+      {entries.map(e => (
+        <li class="log-entry">
+          <time class="log-date">{e.date}</time>
+          <span class="log-text">{e.text}</span>
+        </li>
+      ))}
+    </ul>
+
+  </div>
+</Layout>
+
+<style>
+  .container { padding-top: 3rem; padding-bottom: 3rem; }
+
+  .page-header { margin-bottom: 2rem; }
+
+  .label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+
+  .sub { font-size: 0.8rem; color: var(--muted); }
+
+  .log-list { list-style: none; display: flex; flex-direction: column; }
+
+  .log-entry {
+    display: flex;
+    gap: 1.5rem;
+    align-items: baseline;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--faint);
+    font-size: 0.8rem;
+  }
+
+  .log-entry:first-child { border-top: 1px solid var(--faint); }
+
+  .log-date { color: var(--muted); flex-shrink: 0; font-size: 0.72rem; min-width: 9ch; }
+
+  .log-text { color: var(--text); line-height: 1.6; }
+
+  @media (max-width: 480px) {
+    .log-entry { flex-direction: column; gap: 0.15rem; }
+  }
+</style>

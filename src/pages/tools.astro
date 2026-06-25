@@ -66,7 +66,10 @@ azpol-lint --initiative ./initiatives/cis-l1.json ./policies/`,
           <div class="snippet">
             <div class="snippet-bar">
               <span>{t.name}</span>
-              <span class="snippet-lang">{t.lang}</span>
+              <div class="snippet-bar-right">
+                <span class="snippet-lang">{t.lang}</span>
+                <button class="copy-btn" data-snippet={t.snippet}>copy</button>
+              </div>
             </div>
             <pre><code>{t.snippet}</code></pre>
           </div>
@@ -129,7 +132,25 @@ azpol-lint --initiative ./initiatives/cis-l1.json ./policies/`,
     color: var(--muted);
   }
 
+  .snippet-bar-right { display: flex; align-items: center; gap: 0.75rem; }
+
   .snippet-lang { color: var(--faint); }
+
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--faint);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .copy-btn:hover { color: var(--text); border-color: var(--border); }
+
+  .copy-btn.copied { color: var(--green); border-color: var(--green); }
 
   .snippet pre {
     border: none;
@@ -142,3 +163,23 @@ azpol-lint --initiative ./initiatives/cis-l1.json ./policies/`,
     border-left: none;
   }
 </style>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = (btn as HTMLElement).dataset.snippet ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      } catch {
+        btn.textContent = 'failed';
+        setTimeout(() => { btn.textContent = 'copy'; }, 2000);
+      }
+    });
+  });
+</script>

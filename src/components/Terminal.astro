@@ -48,20 +48,12 @@
     border-bottom: 1px solid var(--faint);
   }
 
-  .dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .dot.r { background: #e5534b; }
   .dot.y { background: #c69026; }
-  .dot.g { background: #57ab5a; }
+  .dot.g { background: #27c93f; }
 
-  .term-title {
-    margin-left: 0.5rem;
-    font-size: 0.7rem;
-    color: var(--muted);
-  }
+  .term-title { margin-left: 0.5rem; font-size: 0.7rem; color: var(--muted); }
 
   .term-body {
     padding: 1.1rem 1.25rem 0.75rem;
@@ -72,12 +64,7 @@
     line-height: 1.7;
   }
 
-  .term-input-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.1rem;
-  }
+  .term-input-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.1rem; }
 
   .prompt { color: var(--green); flex-shrink: 0; }
 
@@ -93,31 +80,26 @@
     width: 100%;
   }
 
-  /* output line types */
   .dim    { color: var(--muted); }
   .g      { color: var(--green); }
   .b      { color: var(--blue);  }
   .err    { color: var(--red);   }
+  .warn   { color: var(--orange);}
   .echo   { color: var(--muted); }
   .spacer { display: block; height: 0.4rem; }
-
-  /* table-ish rows */
-  .t-row  { display: flex; gap: 0; }
-  .t-name { color: var(--blue); min-width: 28ch; }
-  .t-tags { color: var(--muted); min-width: 26ch; }
-  .t-year { color: var(--muted); }
 </style>
 
 <script>
-  const term     = document.getElementById('term')!;
-  const termOut  = document.getElementById('term-out')!;
-  const termBody = document.getElementById('term-body')!;
+  const term      = document.getElementById('term')!;
+  const termOut   = document.getElementById('term-out')!;
+  const termBody  = document.getElementById('term-body')!;
   const termInput = document.getElementById('term-input') as HTMLInputElement;
 
-  const history: string[] = [];
+  const cmdHistory: string[] = [];
   let histIdx = -1;
+  let pagefindLoaded = false;
 
-  // ── data ──────────────────────────────────────────────────────────────
+  // ── data ────────────────────────────────────────────────────────────
 
   const PROJECTS: Record<string, string> = {
     'enterprise-zt-framework': [
@@ -125,81 +107,41 @@
       '<span class="dim">────────────────────────────────</span>',
       '',
       '<span class="dim">problem    </span>1,200-user hybrid org with implicit trust throughout the network.',
-      '           any device on the lan could reach critical resources.',
       '<span class="dim">approach   </span>identity-centric ZTA using entra id as the policy engine.',
-      '           conditional access on all cloud apps, global secure access',
-      '           replacing legacy vpn for remote workers.',
       '<span class="dim">outcome    </span>eliminated lateral movement across 23 network segments.',
-      '           90-day phased rollout, zero user-impacting incidents.',
-      '',
-      '<span class="err">what broke </span>conditional access rollout triggered mfa fatigue in week 2.',
-      '           had to slow down, add targeted exclusions, then tighten',
-      '           back up over the following month. lesson: meter the rollout.',
-      '',
+      '<span class="err">what broke </span>ca rollout triggered mfa fatigue in week 2. had to slow down.',
       '<span class="dim">stack      </span>entra id · conditional access · pim · global secure access · intune',
     ].join('\n'),
-
     'azure-secure-alz': [
       '<span class="b">azure secure landing zone</span>',
       '<span class="dim">────────────────────────────────</span>',
       '',
-      '<span class="dim">problem    </span>standard alz accelerators deploy infra correctly but leave security',
-      '           as a post-deployment afterthought. teams spend weeks remediating',
-      '           findings that could have been prevented on day 0.',
-      '<span class="dim">approach   </span>extended microsoft alz bicep with a security overlay: custom policy',
-      '           initiatives for cis azure foundations benchmark, defender for',
-      '           cloud auto-provisioning, log analytics with 90-day retention.',
-      '<span class="dim">outcome    </span>cis l1 compliance on day 0. every new subscription inherits the',
-      '           baseline automatically.',
-      '',
-      '<span class="err">what broke </span>azure policy deny effects blocked a legitimate legacy workload',
-      '           migration in environment 3. we had to scope the deny policy',
-      '           to exclude specific resource groups. deny effects need careful',
-      '           scope management — blanket enforcement will burn you.',
-      '',
-      '<span class="dim">stack      </span>bicep · azure policy · defender for cloud · log analytics · github actions',
+      '<span class="dim">problem    </span>standard alz leaves security as a post-deployment afterthought.',
+      '<span class="dim">approach   </span>bicep overlay with cis benchmark policy + defender auto-provisioning.',
+      '<span class="dim">outcome    </span>cis l1 compliance on day 0 for every new subscription.',
+      '<span class="err">what broke </span>deny effects blocked a legacy workload migration. scope carefully.',
+      '<span class="dim">stack      </span>bicep · azure policy · defender for cloud · log analytics',
       '<span class="g">repo       </span>github.com/dwagent/yololabs-website',
     ].join('\n'),
-
     'sentinel-detections': [
       '<span class="b">sentinel detection library</span>',
       '<span class="dim">────────────────────────────────</span>',
       '',
-      '<span class="dim">problem    </span>sentinel ships with generic rules that generate massive alert volumes.',
-      '           soc teams spend more time triaging false positives than investigating.',
-      '<span class="dim">approach   </span>50+ production-tested kql analytic rules tuned against real telemetry.',
-      '           each rule includes mitre att&ck mapping, expected fp rate,',
-      '           tuning guidance, and a synthetic test case.',
-      '<span class="dim">outcome    </span>average fp rate under 5% in production. 12 rules contributed back',
-      '           to the microsoft sentinel community.',
-      '',
-      '<span class="err">what broke </span>three rules that looked perfect in dev generated 400+ alerts per day',
-      '           in production due to a noisy data source we didn\'t account for.',
-      '           always test against a production data sample, not a dev workspace.',
-      '',
+      '<span class="dim">problem    </span>generic sentinel rules → massive alert volume → analyst fatigue.',
+      '<span class="dim">approach   </span>50+ high-fidelity kql rules tuned against real telemetry.',
+      '<span class="dim">outcome    </span>avg false positive rate under 5% in production.',
+      '<span class="err">what broke </span>3 rules generating 400+ alerts/day in prod due to noisy data source.',
       '<span class="dim">stack      </span>kql · microsoft sentinel · mitre att&ck · bicep · python',
-      '<span class="g">repo       </span>github.com/yololabs/sentinel-detections',
     ].join('\n'),
-
     'entra-auditor': [
       '<span class="b">entra permission auditor</span>',
       '<span class="dim">────────────────────────────────</span>',
       '',
-      '<span class="dim">problem    </span>every entra id tenant we\'ve audited has the same issues: service',
-      '           principals with global admin, orphaned app registrations,',
-      '           conditional access exclusions that were "temporary fixes."',
-      '<span class="dim">approach   </span>powershell module using microsoft graph api. outputs a prioritized',
-      '           risk report with remediation guidance. read-only, no destructive ops.',
-      '<span class="dim">outcome    </span>found 47 over-privileged service principals on first run against',
-      '           a production tenant. identified 3 ca exclusion groups not',
-      '           reviewed in 18+ months.',
-      '',
-      '<span class="err">what broke </span>graph api throttling at scale. for tenants with 10k+ objects,',
-      '           naive parallel requests hit rate limits immediately.',
-      '           had to implement exponential backoff and batch pagination.',
-      '',
+      '<span class="dim">problem    </span>every tenant has the same sprawl: over-privileged sps, orphaned apps, ca exclusions.',
+      '<span class="dim">approach   </span>powershell + graph api, read-only, outputs prioritized risk report.',
+      '<span class="dim">outcome    </span>found 47 over-privileged sps on first run against a production tenant.',
+      '<span class="err">what broke </span>graph api throttling at scale. implemented exponential backoff.',
       '<span class="dim">stack      </span>powershell · microsoft graph api · entra id · azure automation',
-      '<span class="g">repo       </span>github.com/yololabs/entra-auditor',
     ].join('\n'),
   };
 
@@ -210,11 +152,38 @@
     { date: '2026-03-28', title: 'Tackling Entra ID Permissions Sprawl at Scale', slug: 'entra-permissions-sprawl' },
   ];
 
-  // ── commands ───────────────────────────────────────────────────────────
+  const FS_TREE = [
+    'projects/   blog/   tools/   about/',
+    'now/        log/',
+  ];
 
-  type CmdResult = string | null;
+  // ── helpers ──────────────────────────────────────────────────────────
 
-  const CMDS: Record<string, (args: string[]) => CmdResult> = {
+  function esc(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function appendBlock(html: string) {
+    const block = document.createElement('div');
+    block.innerHTML = html;
+    termOut.appendChild(block);
+    const spacer = document.createElement('span');
+    spacer.className = 'spacer';
+    termOut.appendChild(spacer);
+    termBody.scrollTop = termBody.scrollHeight;
+  }
+
+  function lines(arr: string[]) {
+    return arr.map(l => `<div>${l || '&nbsp;'}</div>`).join('');
+  }
+
+  function out(text: string) {
+    appendBlock(text.split('\n').map(l => `<div>${l || '&nbsp;'}</div>`).join(''));
+  }
+
+  // ── standard commands ────────────────────────────────────────────────
+
+  const CMDS: Record<string, (args: string[]) => string | null> = {
 
     help: () => [
       'available commands:',
@@ -222,11 +191,15 @@
       '  <span class="g">help</span>              this message',
       '  <span class="g">whoami</span>            who we are',
       '  <span class="g">projects</span>          list projects',
-      '  <span class="g">cat &lt;project&gt;</span>    show project details (including what broke)',
+      '  <span class="g">cat &lt;project&gt;</span>    project details (including what broke)',
       '  <span class="g">blog</span>              recent writing',
+      '  <span class="g">search &lt;query&gt;</span>  search the site',
       '  <span class="g">contact</span>           how to reach us',
-      '  <span class="g">open github</span>       open github profile',
-      '  <span class="g">clear</span>             clear the terminal',
+      '  <span class="g">open &lt;thing&gt;</span>    open github | linkedin | now | log',
+      '  <span class="g">ls</span>                list pages',
+      '  <span class="g">clear</span>             clear terminal',
+      '',
+      '  <span class="dim">try: sudo, nmap, ssh, ping, hack</span>',
     ].join('\n'),
 
     whoami: () => [
@@ -245,7 +218,7 @@
         ['sentinel-detections',      'detection · kql',          '2024', '⬡ oss'],
         ['entra-auditor',            'identity · graph api',     '2024'],
       ];
-      const lines = [
+      return [
         '',
         ...rows.map(([name, tags, year, badge = '']) =>
           `  <span class="b">${name.padEnd(28)}</span>` +
@@ -254,68 +227,238 @@
           (badge ? `  <span class="g">${badge}</span>` : '')
         ),
         '',
-        `  <span class="dim">cat &lt;project-name&gt; for details + what broke</span>`,
+        `  <span class="dim">cat &lt;project-name&gt; for details</span>`,
         '',
-      ];
-      return lines.join('\n');
+      ].join('\n');
     },
 
     blog: () => {
-      const lines = [
+      return [
         '',
         ...BLOG_POSTS.map(p =>
           `  <span class="dim">${p.date}</span>  <a href="/blog/${p.slug}" style="color:var(--blue)">${p.title}</a>`
         ),
         '',
-        `  <span class="dim">→ <a href="/blog" style="color:var(--muted)">/blog</a></span>`,
+        `  <a href="/blog" style="color:var(--muted)">→ /blog</a>  ` +
+        `<a href="/now" style="color:var(--muted)">→ /now</a>  ` +
+        `<a href="/log" style="color:var(--muted)">→ /log</a>`,
         '',
-      ];
-      return lines.join('\n');
+      ].join('\n');
     },
+
+    ls: () => [
+      '',
+      `  <span class="b">projects/</span>   <span class="b">blog/</span>   <span class="b">tools/</span>   <span class="b">about/</span>`,
+      `  <span class="b">now/</span>        <span class="b">log/</span>`,
+      '',
+    ].join('\n'),
 
     contact: () => [
       '',
-      '  <a href="mailto:hello@yololabs.org" style="color:var(--blue)">hello@yololabs.org</a>',
-      '  <a href="https://github.com/dwagent/yololabs-website" target="_blank" style="color:var(--muted)">github.com/yololabs</a>',
+      `  <a href="mailto:hello@yololabs.org" style="color:var(--blue)">hello@yololabs.org</a>`,
+      `  <a href="https://github.com/dwagent/yololabs-website" target="_blank" style="color:var(--muted)">github.com/yololabs</a>`,
       '',
     ].join('\n'),
 
     open: (args) => {
-      const target = args[0];
-      if (target === 'github') {
-        window.open('https://github.com/dwagent/yololabs-website', '_blank');
-        return 'opening github.com/yololabs...';
-      }
-      if (target === 'linkedin') {
-        window.open('https://linkedin.com', '_blank');
-        return 'opening linkedin...';
-      }
-      return `<span class="err">don't know how to open: ${esc(target ?? '')}. try: open github</span>`;
+      const t = args[0];
+      const openTab = (url: string, label: string) => {
+        window.open(url, '_blank');
+        return `opening ${label}...`;
+      };
+      if (t === 'github')   return openTab('https://github.com/dwagent/yololabs-website', 'github.com/yololabs');
+      if (t === 'linkedin') return openTab('https://linkedin.com', 'linkedin');
+      if (t === 'now')      { window.location.href = '/now'; return null; }
+      if (t === 'log')      { window.location.href = '/log'; return null; }
+      return `<span class="err">don't know how to open: ${esc(t ?? '')}. try: open github | linkedin | now | log</span>`;
     },
+
+    // ── easter eggs ────────────────────────────────────────────────────
+
+    sudo: (args) => {
+      const subcmd = args.join(' ');
+      if (subcmd.includes('rm') && subcmd.includes('-rf')) {
+        return [
+          '<span class="err">Permission denied.</span>',
+          '',
+          '  we run least-privilege here. nice try.',
+          '  you would need: sudo privileges, a change ticket, two approvals,',
+          '  a maintenance window, and a rollback plan.',
+          '',
+          `  <span class="dim">this is not a test environment.</span>`,
+        ].join('\n');
+      }
+      return [
+        '<span class="err">sudo: command not found</span>',
+        '<span class="dim">if you need elevated access, open a ticket like everyone else</span>',
+      ].join('\n');
+    },
+
+    nmap: (args) => {
+      const target = args[0] || 'localhost';
+      const isLocal = target === 'localhost' || target === '127.0.0.1';
+      if (isLocal) {
+        return [
+          `Starting Nmap 7.95 ( https://nmap.org )`,
+          `Nmap scan report for ${target} (127.0.0.1)`,
+          `Host is up (0.000042s latency).`,
+          '',
+          `PORT     STATE  SERVICE`,
+          `22/tcp   open   ssh`,
+          `443/tcp  open   https    yololabs.org`,
+          `8080/tcp closed http`,
+          '',
+          `<span class="dim">Nmap done: 1 IP address (1 host up) scanned in 0.12 seconds</span>`,
+          '',
+          `<span class="warn">note: ssh access is mfa-enforced and logs to sentinel. just so you know.</span>`,
+        ].join('\n');
+      }
+      return [
+        `<span class="warn">Starting Nmap 7.95...</span>`,
+        `<span class="err">Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn</span>`,
+        `<span class="dim">Nmap done: 1 IP address (0 hosts up) scanned in 2.04 seconds</span>`,
+        '',
+        `<span class="dim">we don't scan hosts we don't own. authorized targets only.</span>`,
+      ].join('\n');
+    },
+
+    ping: (args) => {
+      const target = args[0] || 'yololabs.org';
+      const isUs = target === 'yololabs.org' || target === 'localhost';
+      if (isUs) {
+        return [
+          `PING ${target}: 56 data bytes`,
+          `64 bytes from ${target}: icmp_seq=0 ttl=57 time=12.3 ms`,
+          `64 bytes from ${target}: icmp_seq=1 ttl=57 time=11.8 ms`,
+          `64 bytes from ${target}: icmp_seq=2 ttl=57 time=12.1 ms`,
+          `64 bytes from ${target}: icmp_seq=3 ttl=57 time=11.9 ms`,
+          '',
+          `--- ${target} ping statistics ---`,
+          `4 packets transmitted, 4 received, 0.0% packet loss`,
+          `round-trip min/avg/max/stddev = 11.8/12.0/12.3/0.2 ms`,
+        ].join('\n');
+      }
+      return [
+        `PING ${esc(target)}: 56 data bytes`,
+        `Request timeout for icmp_seq 0`,
+        `Request timeout for icmp_seq 1`,
+        '',
+        `--- ${esc(target)} ping statistics ---`,
+        `2 packets transmitted, 0 packets received, 100.0% packet loss`,
+        '',
+        `<span class="dim">...or we're just being filtered. who knows.</span>`,
+      ].join('\n');
+    },
+
+    ssh: (args) => {
+      const target = args[0] || '';
+      const isRoot = target.startsWith('root@');
+      return [
+        `<span class="err">ssh: connect to host ${esc(target || 'unknown')} port 22: Connection refused</span>`,
+        '',
+        isRoot
+          ? `<span class="warn">root login is disabled. obviously.</span>`
+          : `<span class="dim">if you have legitimate access, you already know what to do.</span>`,
+      ].join('\n');
+    },
+
+    hack: () => [
+      '<span class="warn">INITIATING HACK SEQUENCE...</span>',
+      '',
+      '  [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%',
+      '',
+      '  <span class="err">ACCESS DENIED</span>',
+      '',
+      `  <span class="dim">this isn't a movie. real attack paths involve:`,
+      `  - credential stuffing on exposed APIs`,
+      `  - phishing for MFA fatigue bypass`,
+      `  - over-privileged service principals`,
+      `  - conditional access exclusion groups nobody reviewed</span>`,
+      '',
+      `  <span class="dim">we wrote a tool that finds those. see: cat entra-auditor</span>`,
+    ].join('\n'),
+
+    whoami_root: () => `<span class="err">you wish</span>`,
+
+    uname: (args) => {
+      if (args[0] === '-a') {
+        return `YoloLabsOS 6.0.0-security #1 SMP PREEMPT_DYNAMIC ZeroTrust/AzurePolicy x86_64 GNU/Linux`;
+      }
+      return `YoloLabsOS`;
+    },
+
+    pwd: () => `/home/yololabs`,
+
+    history: () => {
+      if (!cmdHistory.length) return '<span class="dim">no history yet</span>';
+      return cmdHistory
+        .slice()
+        .reverse()
+        .map((cmd, i) => `  <span class="dim">${String(i + 1).padStart(3)}</span>  ${esc(cmd)}`)
+        .join('\n');
+    },
+
+    exit: () => {
+      return [
+        `<span class="dim">nice try. you can't exit the internet.</span>`,
+        `<span class="dim">close the tab if you must.</span>`,
+      ].join('\n');
+    },
+
+    date: () => new Date().toString(),
+
+    echo: (args) => esc(args.join(' ')),
   };
 
-  // ── helpers ────────────────────────────────────────────────────────────
+  // ── async search ─────────────────────────────────────────────────────
 
-  function esc(s: string) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  async function runSearch(query: string) {
+    if (!query.trim()) {
+      out('<span class="err">usage: search &lt;query&gt;</span>');
+      return;
+    }
+    out(`<span class="dim">searching for "${esc(query)}"...</span>`);
+
+    try {
+      if (!pagefindLoaded) {
+        // @ts-ignore — pagefind is injected at build time
+        await import('/pagefind/pagefind.js');
+        pagefindLoaded = true;
+      }
+      // @ts-ignore
+      const pf = window.pagefind;
+      const results = await pf.search(query);
+
+      if (!results.results.length) {
+        out(`<span class="dim">no results for "${esc(query)}"</span>`);
+        return;
+      }
+
+      const data = await Promise.all(results.results.slice(0, 6).map((r: any) => r.data()));
+      const resultLines = [
+        `<span class="g">${data.length} result${data.length === 1 ? '' : 's'}</span>`,
+        '',
+        ...data.flatMap((r: any) => [
+          `  <a href="${r.url}" style="color:var(--blue)">${r.meta?.title || r.url}</a>`,
+          r.excerpt
+            ? `  <span class="dim">${r.excerpt.replace(/<[^>]+>/g, '').slice(0, 120)}...</span>`
+            : '',
+          '',
+        ]),
+      ];
+      out(resultLines.join('\n'));
+    } catch {
+      out('<span class="dim">search index not available in dev mode. run npm run build first.</span>');
+    }
   }
 
-  function appendBlock(html: string, cls = '') {
-    const block = document.createElement('div');
-    block.className = cls;
-    block.innerHTML = html;
-    termOut.appendChild(block);
-    const spacer = document.createElement('span');
-    spacer.className = 'spacer';
-    termOut.appendChild(spacer);
-    termBody.scrollTop = termBody.scrollHeight;
-  }
+  // ── command runner ───────────────────────────────────────────────────
 
-  function run(raw: string) {
+  async function run(raw: string) {
     const trimmed = raw.trim();
     if (!trimmed) return;
 
-    history.unshift(trimmed);
+    cmdHistory.unshift(trimmed);
     histIdx = -1;
 
     // echo
@@ -325,75 +468,61 @@
     const cmd   = parts[0];
     const args  = parts.slice(1);
 
-    if (cmd === 'clear') {
-      termOut.innerHTML = '';
+    // specials
+    if (cmd === 'clear') { termOut.innerHTML = ''; return; }
+
+    if (cmd === 'search') { await runSearch(args.join(' ')); return; }
+
+    if (cmd === 'cat') {
+      const key = args[0];
+      if (!key) { out('<span class="err">usage: cat &lt;project-name&gt;</span>'); return; }
+      const detail = PROJECTS[key];
+      if (detail) {
+        out(detail);
+      } else {
+        out(`<span class="err">no such project: ${esc(key)}</span>\n<span class="dim">run 'projects' to see available names</span>`);
+      }
       return;
     }
 
-    // cat <project>
-    if (cmd === 'cat') {
-      const key = args[0];
-      if (!key) {
-        appendBlock('<span class="err">usage: cat &lt;project-name&gt;</span>');
-        return;
-      }
-      const detail = PROJECTS[key];
-      if (detail) {
-        appendBlock(detail.split('\n').map(l => `<div>${l || '&nbsp;'}</div>`).join(''));
-      } else {
-        appendBlock(
-          `<span class="err">no such project: ${esc(key)}</span>\n` +
-          `<span class="dim">run 'projects' to see available names</span>`
-        );
-      }
+    // handle "whoami root" as a combined token
+    if (cmd === 'whoami' && args[0] === 'root') {
+      out(CMDS['whoami_root']!([]));
       return;
     }
 
     const handler = CMDS[cmd];
     if (handler) {
-      const out = handler(args);
-      if (out !== null && out !== undefined) {
-        appendBlock(out.split('\n').map(l => `<div>${l || '&nbsp;'}</div>`).join(''));
-      }
+      const result = handler(args);
+      if (result !== null && result !== undefined) out(result);
     } else {
-      appendBlock(`<span class="err">command not found: ${esc(cmd)}</span>  <span class="dim">type 'help'</span>`);
+      out(`<span class="err">command not found: ${esc(cmd)}</span>  <span class="dim">type 'help'</span>`);
     }
   }
 
-  // ── events ─────────────────────────────────────────────────────────────
+  // ── events ───────────────────────────────────────────────────────────
 
-  termInput.addEventListener('keydown', (e: KeyboardEvent) => {
+  termInput.addEventListener('keydown', async (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       const val = termInput.value;
       termInput.value = '';
-      run(val);
+      await run(val);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      if (histIdx < history.length - 1) {
-        histIdx++;
-        termInput.value = history[histIdx];
-      }
+      if (histIdx < cmdHistory.length - 1) { histIdx++; termInput.value = cmdHistory[histIdx]; }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
-      if (histIdx > 0) {
-        histIdx--;
-        termInput.value = history[histIdx];
-      } else {
-        histIdx = -1;
-        termInput.value = '';
-      }
+      if (histIdx > 0) { histIdx--; termInput.value = cmdHistory[histIdx]; }
+      else { histIdx = -1; termInput.value = ''; }
     } else if (e.key === 'Tab') {
       e.preventDefault();
       const val = termInput.value.toLowerCase().trim();
-      const all = [...Object.keys(CMDS), 'clear', 'cat'];
+      const all = [...Object.keys(CMDS).filter(k => k !== 'whoami_root'), 'clear', 'cat', 'search'];
       const match = all.find(c => c.startsWith(val) && c !== val);
       if (match) termInput.value = match;
     }
   });
 
-  // click anywhere on terminal → focus input
   term.addEventListener('click', () => termInput.focus());
-
-  // autofocus on load
   termInput.focus();
 </script>

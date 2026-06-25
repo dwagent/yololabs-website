@@ -1,0 +1,153 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout title={post.data.title} description={post.data.title + ' — YoloLabs'}>
+  <div class="container">
+
+    <div class="post-meta">
+      <a href="/blog" class="back">← blog</a>
+      <span class="sep">·</span>
+      <time>{post.data.date}</time>
+      <span class="sep">·</span>
+      <span>{post.data.readTime}</span>
+    </div>
+
+    <h1 class="post-title">{post.data.title}</h1>
+
+    {post.data.tags && (
+      <div class="post-tags">
+        {post.data.tags.map((t: string) => <span class="tag">{t}</span>)}
+      </div>
+    )}
+
+    <hr />
+
+    <article class="prose">
+      <Content />
+    </article>
+
+    <hr />
+
+    <div class="post-footer">
+      <a href="/blog" class="back">← all posts</a>
+      <a href="mailto:hello@yololabs.org" class="reply">reply via email</a>
+    </div>
+
+  </div>
+</Layout>
+
+<style>
+  .container { padding-top: 3rem; padding-bottom: 3rem; }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .back { color: var(--muted); }
+  .back:hover { color: var(--text); text-decoration: none; }
+  .sep { color: var(--faint); }
+
+  .post-title {
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    line-height: 1.35;
+    margin-bottom: 1rem;
+    max-width: 58ch;
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  hr { margin: 2rem 0; }
+
+  /* prose styles */
+  .prose { max-width: 66ch; font-size: 0.875rem; line-height: 1.85; }
+
+  .prose :global(h2) {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 2.25rem;
+    margin-bottom: 0.6rem;
+    color: var(--text);
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--faint);
+  }
+
+  .prose :global(h3) {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.4rem;
+    color: var(--blue);
+  }
+
+  .prose :global(p) {
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .prose :global(ul), .prose :global(ol) {
+    margin: 0.75rem 0 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .prose :global(li) { color: var(--text); }
+
+  .prose :global(strong) { color: var(--text); font-weight: 600; }
+
+  .prose :global(pre) {
+    margin: 1.25rem 0;
+    border-left: 2px solid var(--green);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  .prose :global(code):not(pre :global(code)) {
+    color: var(--green);
+    background: var(--bg-2);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.85em;
+  }
+
+  .prose :global(blockquote) {
+    border-left: 2px solid var(--faint);
+    padding-left: 1rem;
+    color: var(--muted);
+    margin: 1rem 0;
+  }
+
+  .post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+  }
+
+  .reply { color: var(--muted); }
+  .reply:hover { color: var(--text); text-decoration: none; }
+</style>

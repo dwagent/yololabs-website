@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+---
+
+<Layout title="Blog" description="Security and infrastructure write-ups from the YoloLabs team.">
+  <div class="container">
+
+    <div class="page-header">
+      <p class="label">// writing</p>
+      <p class="sub">practical write-ups on security architecture, azure infrastructure, and detection engineering. no vendor fluff.</p>
+    </div>
+
+    <ul class="post-list">
+      {posts.map(post => (
+        <li class="post-item">
+          <div class="post-top">
+            <a href={`/blog/${post.slug}`} class="post-title">{post.data.title}</a>
+          </div>
+          <div class="post-meta">
+            <time>{post.data.date}</time>
+            <span class="sep">·</span>
+            <span>{post.data.readTime}</span>
+            {post.data.tags && post.data.tags.map((t: string) => (
+              <span class="sep">·</span><span class="tag-text">{t}</span>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <hr />
+
+    <div class="also">
+      <p class="label">// also</p>
+      <ul class="also-list">
+        <li><a href="/now">now</a> — what we're currently working on</li>
+        <li><a href="/log">log</a> — a running record of what we've shipped</li>
+      </ul>
+    </div>
+
+  </div>
+</Layout>
+
+<style>
+  .container { padding-top: 3rem; padding-bottom: 3rem; }
+
+  .page-header { margin-bottom: 2rem; }
+
+  .label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+
+  .sub { font-size: 0.8rem; color: var(--muted); max-width: 58ch; }
+
+  .post-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .post-item {}
+
+  .post-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .post-title:hover { color: var(--blue); text-decoration: none; }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+
+  .sep { color: var(--faint); }
+  .tag-text { color: var(--muted); }
+
+  hr { margin: 2rem 0; }
+
+  .also-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .also-list a { color: var(--blue); }
+  .also-list a:hover { text-decoration: none; opacity: 0.8; }
+</style>

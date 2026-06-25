@@ -1,0 +1,117 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Now" description="What the YoloLabs team is currently working on.">
+  <div class="container">
+
+    <div class="page-header">
+      <p class="label">// now</p>
+      <p class="updated">last updated: june 2026</p>
+    </div>
+
+    <div class="now-body">
+
+      <section class="now-section">
+        <h2>building</h2>
+        <ul>
+          <li>
+            <span class="item-name">entra-auditor v0.4</span>
+            <span class="item-desc">adding cross-tenant guest user reporting and a remediation workflow that integrates with ServiceNow</span>
+          </li>
+          <li>
+            <span class="item-name">sentinel SOAR playbook library</span>
+            <span class="item-desc">standardized Logic Apps playbooks for the most common incident types — credential attack, MFA bypass, exfiltration alert. parameterized so they drop in without customization</span>
+          </li>
+          <li>
+            <span class="item-name">this site</span>
+            <span class="item-desc">ongoing. the interactive terminal was the most recent addition. working on RSS next.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="now-section">
+        <h2>reading</h2>
+        <ul>
+          <li>
+            <span class="item-name">Zero Trust Networks</span>
+            <span class="item-desc">Evan Gilman &amp; Doug Barth. still the clearest technical treatment of ZT architecture that exists. holds up.</span>
+          </li>
+          <li>
+            <span class="item-name">CISA Zero Trust Maturity Model v2.0</span>
+            <span class="item-desc">useful for framing ZT conversations with organizations that need a framework reference</span>
+          </li>
+          <li>
+            <span class="item-name">James Mickens' papers</span>
+            <span class="item-desc">not security-related. just very funny. <a href="https://mickens.seas.harvard.edu/wisdom-james-mickens" target="_blank" rel="noopener">the wisdom of james mickens</a> if you haven't read them.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="now-section">
+        <h2>thinking about</h2>
+        <ul>
+          <li>
+            <span class="item-name">identity governance at the AI boundary</span>
+            <span class="item-desc">every AI system in an enterprise becomes a service principal with access to something. we're thinking about how ZT principles apply to AI agent identity and what "least privilege" means for a model that can call arbitrary APIs</span>
+          </li>
+          <li>
+            <span class="item-name">detection engineering for Copilot for Security</span>
+            <span class="item-desc">what does KQL-based detection look like when the SIEM has an AI layer? are analytic rules still the right unit of detection?</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="now-section">
+        <h2>where we'll be</h2>
+        <ul>
+          <li>
+            <span class="item-name">BSides local — july 2026</span>
+            <span class="item-desc">presenting the zero trust migration case study. slides will be published after.</span>
+          </li>
+        </ul>
+      </section>
+
+    </div>
+
+    <hr />
+
+    <p class="nownownow">
+      this page is inspired by <a href="https://nownownow.com" target="_blank" rel="noopener">nownownow.com</a>.
+      the idea: a /now page tells you what someone is focused on right now, not who they were when they last updated their bio.
+    </p>
+
+  </div>
+</Layout>
+
+<style>
+  .container { padding-top: 3rem; padding-bottom: 3rem; }
+
+  .page-header { margin-bottom: 2rem; }
+
+  .label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+
+  .updated { font-size: 0.75rem; color: var(--muted); }
+
+  .now-body { display: flex; flex-direction: column; gap: 2rem; margin-bottom: 2.5rem; }
+
+  .now-section h2 {
+    font-size: 0.78rem;
+    color: var(--blue);
+    font-weight: 500;
+    margin-bottom: 0.85rem;
+    letter-spacing: 0.03em;
+  }
+
+  .now-section ul { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+
+  .now-section li { display: flex; flex-direction: column; gap: 0.15rem; max-width: 62ch; }
+
+  .item-name { font-size: 0.82rem; color: var(--text); font-weight: 500; }
+
+  .item-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
+
+  hr { margin: 2rem 0; }
+
+  .nownownow { font-size: 0.75rem; color: var(--muted); max-width: 56ch; line-height: 1.7; }
+</style>
