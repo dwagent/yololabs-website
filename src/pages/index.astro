@@ -3,9 +3,9 @@ import Layout from '../layouts/Layout.astro';
 import Terminal from '../components/Terminal.astro';
 
 const posts = [
-  { date: '2026-06-10', title: 'Why Most Zero Trust Implementations Fail', slug: 'why-zero-trust-fails' },
-  { date: '2026-05-22', title: 'Building a Security-First Azure Landing Zone in 2026', slug: 'azure-landing-zone-security' },
-  { date: '2026-04-15', title: 'KQL Detection Patterns That Actually Reduce Alert Fatigue', slug: 'kql-detection-patterns' },
+  { date: '2026-06-10', title: 'Why Most Zero Trust Implementations Fail', id: 'why-zero-trust-fails' },
+  { date: '2026-05-22', title: 'Building a Security-First Azure Landing Zone in 2026', id: 'azure-landing-zone-security' },
+  { date: '2026-04-15', title: 'KQL Detection Patterns That Actually Reduce Alert Fatigue', id: 'kql-detection-patterns' },
 ];
 
 const projects = [
@@ -35,7 +35,7 @@ const projects = [
         {posts.map(p => (
           <li>
             <span class="row-date">{p.date}</span>
-            <a href={`/blog/${p.slug}`}>{p.title}</a>
+            <a href={`/blog/${p.id}`}>{p.title}</a>
           </li>
         ))}
       </ul>
