@@ -421,8 +421,8 @@
 
     try {
       if (!pagefindLoaded) {
-        // @ts-ignore — pagefind is injected at build time
-        await import('/pagefind/pagefind.js');
+        // @ts-ignore
+        await import(/* @vite-ignore */ '/pagefind/pagefind.js');
         pagefindLoaded = true;
       }
       // @ts-ignore
