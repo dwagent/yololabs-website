@@ -1,0 +1,162 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const posts = [
+  {
+    slug: 'why-zero-trust-fails',
+    title: 'Why Most Zero Trust Implementations Fail (And How to Fix Them)',
+    date: '2026-06-10',
+    readTime: '8 min read',
+    tags: [{ label: 'Zero Trust', cls: 'tag-blue' }],
+    excerpt: 'Zero Trust is one of the most misunderstood concepts in enterprise security. Most implementations fail not because the architecture is wrong, but because organizations skip the identity foundation and jump straight to network segmentation.',
+  },
+  {
+    slug: 'azure-landing-zone-security',
+    title: 'Building a Security-First Azure Landing Zone in 2026',
+    date: '2026-05-22',
+    readTime: '12 min read',
+    tags: [{ label: 'Azure', cls: 'tag-orange' }, { label: 'IaC', cls: 'tag-green' }],
+    excerpt: 'The Microsoft ALZ accelerator is a great starting point, but its security defaults are far too permissive for production. Here\'s how we extend it with policy-as-code enforcement, Defender for Cloud, and audit-ready compliance from day one.',
+  },
+  {
+    slug: 'kql-detection-patterns',
+    title: 'KQL Detection Patterns That Actually Reduce Alert Fatigue',
+    date: '2026-04-15',
+    readTime: '10 min read',
+    tags: [{ label: 'Detection', cls: 'tag-green' }, { label: 'KQL', cls: 'tag-blue' }],
+    excerpt: 'The difference between a 5% and 40% false positive rate isn\'t just better queries — it\'s understanding the behavioral baseline of your environment. We walk through five patterns we use in production Sentinel deployments.',
+  },
+  {
+    slug: 'entra-permissions-sprawl',
+    title: 'Tackling Entra ID Permissions Sprawl at Scale',
+    date: '2026-03-28',
+    readTime: '7 min read',
+    tags: [{ label: 'Identity', cls: 'tag-purple' }],
+    excerpt: 'Every Entra ID tenant we\'ve audited has the same problem: service principals with excessive permissions, app registrations nobody remembers creating, and Conditional Access exclusions that were "temporary." Here\'s how we systematically address it.',
+  },
+];
+---
+
+<Layout title="Blog" description="Security and infrastructure write-ups from the YoloLabs team.">
+
+  <section class="section">
+    <div class="container">
+      <p class="section-title">// writing</p>
+      <h1 class="section-heading">Blog</h1>
+      <p class="section-subtitle">
+        Practical write-ups on security architecture, Azure infrastructure, and detection engineering.
+        No vendor fluff, no slides-as-content.
+      </p>
+
+      <div class="posts-list">
+        {posts.map(post => (
+          <article class="post-card card">
+            <div class="post-meta">
+              <div class="post-tags">
+                {post.tags.map(t => <span class={`tag ${t.cls}`}>{t.label}</span>)}
+              </div>
+              <div class="post-info">
+                <time datetime={post.date}>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+                <span class="separator">·</span>
+                <span>{post.readTime}</span>
+              </div>
+            </div>
+            <h2><a href={`/blog/${post.slug}`}>{post.title}</a></h2>
+            <p class="post-excerpt">{post.excerpt}</p>
+            <a href={`/blog/${post.slug}`} class="read-more">Read more →</a>
+          </article>
+        ))}
+      </div>
+
+      <div class="subscribe-card card">
+        <h3>Get notified when we post</h3>
+        <p>No newsletter, no marketing. Just a ping when we publish something new.</p>
+        <div class="subscribe-form">
+          <input type="email" placeholder="you@company.com" class="email-input" />
+          <button class="btn btn-primary">Subscribe</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .post-card { padding: 1.75rem; }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .post-tags { display: flex; gap: 0.4rem; }
+
+  .post-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .separator { color: var(--border); }
+
+  .post-card h2 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+
+  .post-card h2 a { color: var(--text-primary); }
+
+  .post-card h2 a:hover { color: var(--accent-blue); }
+
+  .post-excerpt { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.7; }
+
+  .read-more { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); }
+
+  .subscribe-card {
+    padding: 2rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .subscribe-card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; }
+
+  .subscribe-card p { color: var(--text-secondary); margin-bottom: 1.25rem; font-size: 0.9rem; }
+
+  .subscribe-form {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 400px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .email-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .email-input:focus { border-color: var(--accent-blue); }
+
+  .email-input::placeholder { color: var(--text-muted); }
+</style>

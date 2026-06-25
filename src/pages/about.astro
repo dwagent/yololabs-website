@@ -1,0 +1,225 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const team = [
+  {
+    handle: 'founder01',
+    name: 'Alex Rivera',
+    role: 'Security Architect',
+    bio: 'Former CISO-adjacent. 10+ years designing Zero Trust architectures for regulated industries. Built security programs from scratch at two fintech startups. Believes most security problems are actually identity problems in disguise.',
+    certs: ['CISSP', 'AZ-500', 'SC-100'],
+    focus: ['Zero Trust', 'Identity Architecture', 'Security Strategy'],
+    github: 'https://github.com',
+    linkedin: 'https://linkedin.com',
+  },
+  {
+    handle: 'founder02',
+    name: 'Jordan Kim',
+    role: 'Cloud Infrastructure Lead',
+    bio: 'Azure MVP (pending). Spent 8 years managing hybrid infrastructure before going all-in on cloud-native. Wrote the Bicep templates your team is probably using. Obsessed with policy-as-code and infrastructure that enforces its own security.',
+    certs: ['AZ-104', 'AZ-305', 'AZ-700'],
+    focus: ['Azure Landing Zones', 'Bicep / Terraform', 'Governance'],
+    github: 'https://github.com',
+    linkedin: 'https://linkedin.com',
+  },
+  {
+    handle: 'founder03',
+    name: 'Sam Torres',
+    role: 'Detection Engineer',
+    bio: 'Came up through SOC, stayed for the hunting. Spent 6 years tuning SIEM rules and getting paged at 2am before deciding to build better detections instead of just responding to bad ones. KQL is a second language at this point.',
+    certs: ['SC-200', 'CEH', 'GCIA'],
+    focus: ['Microsoft Sentinel', 'KQL', 'Threat Hunting'],
+    github: 'https://github.com',
+    linkedin: 'https://linkedin.com',
+  },
+];
+
+const values = [
+  { icon: '🔍', title: 'Show your work', body: 'We publish our methodologies, not just our conclusions. If we can\'t explain why something is secure, it isn\'t.' },
+  { icon: '⚙️', title: 'Automate the boring parts', body: 'Manual security processes are broken security processes. Everything repeatable gets automated.' },
+  { icon: '📖', title: 'Write it down', body: 'Architecture decisions, post-mortems, detection logic — if it\'s not documented, it didn\'t happen.' },
+  { icon: '🤝', title: 'Security enables, it doesn\'t block', body: 'The right security architecture lets people do their jobs faster, not slower. If your controls create workarounds, rethink the controls.' },
+];
+---
+
+<Layout title="About" description="Meet the YoloLabs team — security engineers and infrastructure architects.">
+
+  <section class="section">
+    <div class="container">
+      <p class="section-title">// who we are</p>
+      <h1 class="section-heading">About YoloLabs</h1>
+      <div class="about-intro">
+        <p>
+          We're a small group of security engineers and infrastructure architects who got tired of waiting for someone else to solve the same problems we kept seeing at every organization we worked at.
+        </p>
+        <p>
+          YoloLabs started as a place to publish the tools and write-ups we were already building on nights and weekends. The name is a reminder that you don't actually know what's on your network until you look.
+        </p>
+        <p class="tagline">"Serious security. Questionable life choices."</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <section class="section">
+    <div class="container">
+      <p class="section-title">// the team</p>
+      <h2 class="section-heading">People</h2>
+      <div class="team-grid">
+        {team.map(member => (
+          <div class="member-card card">
+            <div class="member-header">
+              <div class="member-avatar">
+                <span>{member.name.split(' ').map(n => n[0]).join('')}</span>
+              </div>
+              <div>
+                <h3>{member.name}</h3>
+                <p class="member-role">{member.role}</p>
+                <div class="member-links">
+                  <a href={member.github} target="_blank" rel="noopener" title="GitHub">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                  </a>
+                  <a href={member.linkedin} target="_blank" rel="noopener" title="LinkedIn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <p class="member-bio">{member.bio}</p>
+            <div class="member-section">
+              <div class="member-label">Focus</div>
+              <div class="member-tags">
+                {member.focus.map(f => <span class="tag tag-blue">{f}</span>)}
+              </div>
+            </div>
+            <div class="member-section">
+              <div class="member-label">Certs</div>
+              <div class="member-tags">
+                {member.certs.map(c => <span class="cert-badge">{c}</span>)}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <section class="section">
+    <div class="container">
+      <p class="section-title">// how we work</p>
+      <h2 class="section-heading">Values</h2>
+      <div class="grid-2">
+        {values.map(v => (
+          <div class="value-card card">
+            <div class="value-icon">{v.icon}</div>
+            <h3>{v.title}</h3>
+            <p>{v.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+  .about-intro {
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .about-intro p { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8; }
+
+  .tagline {
+    font-family: var(--font-mono);
+    color: var(--accent-blue) !important;
+    font-size: 1rem !important;
+    border-left: 3px solid var(--accent-blue);
+    padding-left: 1rem;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .member-card { padding: 1.75rem; }
+
+  .member-header {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .member-avatar {
+    width: 48px; height: 48px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 1rem;
+    color: #0d1117;
+    flex-shrink: 0;
+  }
+
+  .member-card h3 { font-size: 1rem; margin-bottom: 0.1rem; }
+
+  .member-role {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-green);
+    margin-bottom: 0.4rem;
+  }
+
+  .member-links {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .member-links a { color: var(--text-muted); transition: color 0.2s; }
+
+  .member-links a:hover { color: var(--text-primary); }
+
+  .member-bio { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.7; margin-bottom: 1rem; }
+
+  .member-section { margin-bottom: 0.75rem; }
+
+  .member-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+
+  .member-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+  .cert-badge {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+  }
+
+  .value-card { padding: 1.75rem; }
+
+  .value-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+
+  .value-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+
+  .value-card p { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.7; }
+</style>
