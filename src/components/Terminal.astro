@@ -1,0 +1,399 @@
+---
+// Interactive terminal — no props needed
+---
+
+<div class="term" id="term">
+  <div class="term-bar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="term-title">yololabs — zsh</span>
+  </div>
+  <div class="term-body" id="term-body">
+    <div id="term-boot">
+      <div><span class="g">yololabs</span> v1.0.0 — security engineering collective</div>
+      <div class="dim">────────────────────────────────────────────</div>
+      <div>type <span class="g">help</span> to see available commands.</div>
+      <div>&nbsp;</div>
+    </div>
+    <div id="term-out"></div>
+    <div class="term-input-row" id="term-input-row">
+      <span class="prompt">❯</span>
+      <input
+        id="term-input"
+        type="text"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="none"
+        spellcheck="false"
+        aria-label="terminal input"
+      />
+    </div>
+  </div>
+</div>
+
+<style>
+  .term {
+    border: 1px solid var(--faint);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg);
+    cursor: text;
+  }
+
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.6rem 1rem;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--faint);
+  }
+
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot.r { background: #e5534b; }
+  .dot.y { background: #c69026; }
+  .dot.g { background: #57ab5a; }
+
+  .term-title {
+    margin-left: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .term-body {
+    padding: 1.1rem 1.25rem 0.75rem;
+    min-height: 260px;
+    max-height: 420px;
+    overflow-y: auto;
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+
+  .term-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.1rem;
+  }
+
+  .prompt { color: var(--green); flex-shrink: 0; }
+
+  #term-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    flex: 1;
+    caret-color: var(--green);
+    width: 100%;
+  }
+
+  /* output line types */
+  .dim    { color: var(--muted); }
+  .g      { color: var(--green); }
+  .b      { color: var(--blue);  }
+  .err    { color: var(--red);   }
+  .echo   { color: var(--muted); }
+  .spacer { display: block; height: 0.4rem; }
+
+  /* table-ish rows */
+  .t-row  { display: flex; gap: 0; }
+  .t-name { color: var(--blue); min-width: 28ch; }
+  .t-tags { color: var(--muted); min-width: 26ch; }
+  .t-year { color: var(--muted); }
+</style>
+
+<script>
+  const term     = document.getElementById('term')!;
+  const termOut  = document.getElementById('term-out')!;
+  const termBody = document.getElementById('term-body')!;
+  const termInput = document.getElementById('term-input') as HTMLInputElement;
+
+  const history: string[] = [];
+  let histIdx = -1;
+
+  // ── data ──────────────────────────────────────────────────────────────
+
+  const PROJECTS: Record<string, string> = {
+    'enterprise-zt-framework': [
+      '<span class="b">enterprise zero trust framework</span>',
+      '<span class="dim">────────────────────────────────</span>',
+      '',
+      '<span class="dim">problem    </span>1,200-user hybrid org with implicit trust throughout the network.',
+      '           any device on the lan could reach critical resources.',
+      '<span class="dim">approach   </span>identity-centric ZTA using entra id as the policy engine.',
+      '           conditional access on all cloud apps, global secure access',
+      '           replacing legacy vpn for remote workers.',
+      '<span class="dim">outcome    </span>eliminated lateral movement across 23 network segments.',
+      '           90-day phased rollout, zero user-impacting incidents.',
+      '',
+      '<span class="err">what broke </span>conditional access rollout triggered mfa fatigue in week 2.',
+      '           had to slow down, add targeted exclusions, then tighten',
+      '           back up over the following month. lesson: meter the rollout.',
+      '',
+      '<span class="dim">stack      </span>entra id · conditional access · pim · global secure access · intune',
+    ].join('\n'),
+
+    'azure-secure-alz': [
+      '<span class="b">azure secure landing zone</span>',
+      '<span class="dim">────────────────────────────────</span>',
+      '',
+      '<span class="dim">problem    </span>standard alz accelerators deploy infra correctly but leave security',
+      '           as a post-deployment afterthought. teams spend weeks remediating',
+      '           findings that could have been prevented on day 0.',
+      '<span class="dim">approach   </span>extended microsoft alz bicep with a security overlay: custom policy',
+      '           initiatives for cis azure foundations benchmark, defender for',
+      '           cloud auto-provisioning, log analytics with 90-day retention.',
+      '<span class="dim">outcome    </span>cis l1 compliance on day 0. every new subscription inherits the',
+      '           baseline automatically.',
+      '',
+      '<span class="err">what broke </span>azure policy deny effects blocked a legitimate legacy workload',
+      '           migration in environment 3. we had to scope the deny policy',
+      '           to exclude specific resource groups. deny effects need careful',
+      '           scope management — blanket enforcement will burn you.',
+      '',
+      '<span class="dim">stack      </span>bicep · azure policy · defender for cloud · log analytics · github actions',
+      '<span class="g">repo       </span>github.com/dwagent/yololabs-website',
+    ].join('\n'),
+
+    'sentinel-detections': [
+      '<span class="b">sentinel detection library</span>',
+      '<span class="dim">────────────────────────────────</span>',
+      '',
+      '<span class="dim">problem    </span>sentinel ships with generic rules that generate massive alert volumes.',
+      '           soc teams spend more time triaging false positives than investigating.',
+      '<span class="dim">approach   </span>50+ production-tested kql analytic rules tuned against real telemetry.',
+      '           each rule includes mitre att&ck mapping, expected fp rate,',
+      '           tuning guidance, and a synthetic test case.',
+      '<span class="dim">outcome    </span>average fp rate under 5% in production. 12 rules contributed back',
+      '           to the microsoft sentinel community.',
+      '',
+      '<span class="err">what broke </span>three rules that looked perfect in dev generated 400+ alerts per day',
+      '           in production due to a noisy data source we didn\'t account for.',
+      '           always test against a production data sample, not a dev workspace.',
+      '',
+      '<span class="dim">stack      </span>kql · microsoft sentinel · mitre att&ck · bicep · python',
+      '<span class="g">repo       </span>github.com/yololabs/sentinel-detections',
+    ].join('\n'),
+
+    'entra-auditor': [
+      '<span class="b">entra permission auditor</span>',
+      '<span class="dim">────────────────────────────────</span>',
+      '',
+      '<span class="dim">problem    </span>every entra id tenant we\'ve audited has the same issues: service',
+      '           principals with global admin, orphaned app registrations,',
+      '           conditional access exclusions that were "temporary fixes."',
+      '<span class="dim">approach   </span>powershell module using microsoft graph api. outputs a prioritized',
+      '           risk report with remediation guidance. read-only, no destructive ops.',
+      '<span class="dim">outcome    </span>found 47 over-privileged service principals on first run against',
+      '           a production tenant. identified 3 ca exclusion groups not',
+      '           reviewed in 18+ months.',
+      '',
+      '<span class="err">what broke </span>graph api throttling at scale. for tenants with 10k+ objects,',
+      '           naive parallel requests hit rate limits immediately.',
+      '           had to implement exponential backoff and batch pagination.',
+      '',
+      '<span class="dim">stack      </span>powershell · microsoft graph api · entra id · azure automation',
+      '<span class="g">repo       </span>github.com/yololabs/entra-auditor',
+    ].join('\n'),
+  };
+
+  const BLOG_POSTS = [
+    { date: '2026-06-10', title: 'Why Most Zero Trust Implementations Fail', slug: 'why-zero-trust-fails' },
+    { date: '2026-05-22', title: 'Building a Security-First Azure Landing Zone in 2026', slug: 'azure-landing-zone-security' },
+    { date: '2026-04-15', title: 'KQL Detection Patterns That Actually Reduce Alert Fatigue', slug: 'kql-detection-patterns' },
+    { date: '2026-03-28', title: 'Tackling Entra ID Permissions Sprawl at Scale', slug: 'entra-permissions-sprawl' },
+  ];
+
+  // ── commands ───────────────────────────────────────────────────────────
+
+  type CmdResult = string | null;
+
+  const CMDS: Record<string, (args: string[]) => CmdResult> = {
+
+    help: () => [
+      'available commands:',
+      '',
+      '  <span class="g">help</span>              this message',
+      '  <span class="g">whoami</span>            who we are',
+      '  <span class="g">projects</span>          list projects',
+      '  <span class="g">cat &lt;project&gt;</span>    show project details (including what broke)',
+      '  <span class="g">blog</span>              recent writing',
+      '  <span class="g">contact</span>           how to reach us',
+      '  <span class="g">open github</span>       open github profile',
+      '  <span class="g">clear</span>             clear the terminal',
+    ].join('\n'),
+
+    whoami: () => [
+      'yololabs — a small collective of security engineers and infrastructure architects.',
+      '',
+      'we build zero trust architectures, azure landing zones,',
+      'and detection engineering tooling.',
+      '',
+      'serious security. questionable life choices.',
+    ].join('\n'),
+
+    projects: () => {
+      const rows = [
+        ['enterprise-zt-framework',  'zero trust · identity',    '2025'],
+        ['azure-secure-alz',         'azure · iac',              '2025', '⬡ oss'],
+        ['sentinel-detections',      'detection · kql',          '2024', '⬡ oss'],
+        ['entra-auditor',            'identity · graph api',     '2024'],
+      ];
+      const lines = [
+        '',
+        ...rows.map(([name, tags, year, badge = '']) =>
+          `  <span class="b">${name.padEnd(28)}</span>` +
+          `<span class="dim">${tags.padEnd(24)}</span>` +
+          `<span class="dim">${year}</span>` +
+          (badge ? `  <span class="g">${badge}</span>` : '')
+        ),
+        '',
+        `  <span class="dim">cat &lt;project-name&gt; for details + what broke</span>`,
+        '',
+      ];
+      return lines.join('\n');
+    },
+
+    blog: () => {
+      const lines = [
+        '',
+        ...BLOG_POSTS.map(p =>
+          `  <span class="dim">${p.date}</span>  <a href="/blog/${p.slug}" style="color:var(--blue)">${p.title}</a>`
+        ),
+        '',
+        `  <span class="dim">→ <a href="/blog" style="color:var(--muted)">/blog</a></span>`,
+        '',
+      ];
+      return lines.join('\n');
+    },
+
+    contact: () => [
+      '',
+      '  <a href="mailto:hello@yololabs.org" style="color:var(--blue)">hello@yololabs.org</a>',
+      '  <a href="https://github.com/dwagent/yololabs-website" target="_blank" style="color:var(--muted)">github.com/yololabs</a>',
+      '',
+    ].join('\n'),
+
+    open: (args) => {
+      const target = args[0];
+      if (target === 'github') {
+        window.open('https://github.com/dwagent/yololabs-website', '_blank');
+        return 'opening github.com/yololabs...';
+      }
+      if (target === 'linkedin') {
+        window.open('https://linkedin.com', '_blank');
+        return 'opening linkedin...';
+      }
+      return `<span class="err">don't know how to open: ${esc(target ?? '')}. try: open github</span>`;
+    },
+  };
+
+  // ── helpers ────────────────────────────────────────────────────────────
+
+  function esc(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function appendBlock(html: string, cls = '') {
+    const block = document.createElement('div');
+    block.className = cls;
+    block.innerHTML = html;
+    termOut.appendChild(block);
+    const spacer = document.createElement('span');
+    spacer.className = 'spacer';
+    termOut.appendChild(spacer);
+    termBody.scrollTop = termBody.scrollHeight;
+  }
+
+  function run(raw: string) {
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+
+    history.unshift(trimmed);
+    histIdx = -1;
+
+    // echo
+    appendBlock(`<span class="prompt">❯</span> <span class="echo">${esc(trimmed)}</span>`);
+
+    const parts = trimmed.toLowerCase().split(/\s+/);
+    const cmd   = parts[0];
+    const args  = parts.slice(1);
+
+    if (cmd === 'clear') {
+      termOut.innerHTML = '';
+      return;
+    }
+
+    // cat <project>
+    if (cmd === 'cat') {
+      const key = args[0];
+      if (!key) {
+        appendBlock('<span class="err">usage: cat &lt;project-name&gt;</span>');
+        return;
+      }
+      const detail = PROJECTS[key];
+      if (detail) {
+        appendBlock(detail.split('\n').map(l => `<div>${l || '&nbsp;'}</div>`).join(''));
+      } else {
+        appendBlock(
+          `<span class="err">no such project: ${esc(key)}</span>\n` +
+          `<span class="dim">run 'projects' to see available names</span>`
+        );
+      }
+      return;
+    }
+
+    const handler = CMDS[cmd];
+    if (handler) {
+      const out = handler(args);
+      if (out !== null && out !== undefined) {
+        appendBlock(out.split('\n').map(l => `<div>${l || '&nbsp;'}</div>`).join(''));
+      }
+    } else {
+      appendBlock(`<span class="err">command not found: ${esc(cmd)}</span>  <span class="dim">type 'help'</span>`);
+    }
+  }
+
+  // ── events ─────────────────────────────────────────────────────────────
+
+  termInput.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      const val = termInput.value;
+      termInput.value = '';
+      run(val);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (histIdx < history.length - 1) {
+        histIdx++;
+        termInput.value = history[histIdx];
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (histIdx > 0) {
+        histIdx--;
+        termInput.value = history[histIdx];
+      } else {
+        histIdx = -1;
+        termInput.value = '';
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const val = termInput.value.toLowerCase().trim();
+      const all = [...Object.keys(CMDS), 'clear', 'cat'];
+      const match = all.find(c => c.startsWith(val) && c !== val);
+      if (match) termInput.value = match;
+    }
+  });
+
+  // click anywhere on terminal → focus input
+  term.addEventListener('click', () => termInput.focus());
+
+  // autofocus on load
+  termInput.focus();
+</script>

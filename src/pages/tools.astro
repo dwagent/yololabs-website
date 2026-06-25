@@ -3,190 +3,142 @@ import Layout from '../layouts/Layout.astro';
 
 const tools = [
   {
+    id: 'entra-auditor',
     name: 'entra-auditor',
-    title: 'Entra Permission Auditor',
-    tagline: 'Find over-privileged identities and risky CA gaps in your Entra ID tenant.',
-    lang: 'PowerShell',
-    stars: '142',
-    tags: [{ label: 'Identity', cls: 'tag-purple' }, { label: 'Graph API', cls: 'tag-blue' }],
-    snippet: `# Install from PSGallery
+    lang: 'powershell',
+    tagline: 'Find over-privileged identities, orphaned apps, and risky CA gaps in Entra ID.',
+    link: 'https://github.com/yololabs/entra-auditor',
+    snippet: `# install
 Install-Module -Name YoloLabs.EntraAuditor
 
-# Run a full tenant audit (read-only)
-Invoke-EntraTenantAudit -OutputFormat HTML -OutputPath ./audit-report.html`,
-    link: 'https://github.com/yololabs/entra-auditor',
+# full tenant audit (read-only, reader permissions only)
+Invoke-EntraTenantAudit -OutputFormat HTML -OutputPath ./report.html`,
   },
   {
+    id: 'sentinel-deploy',
     name: 'sentinel-deploy',
-    title: 'Sentinel Rule Deployer',
-    tagline: 'Deploy KQL analytic rules to Microsoft Sentinel via CI/CD pipeline.',
-    lang: 'Python',
-    stars: '87',
-    tags: [{ label: 'Sentinel', cls: 'tag-green' }, { label: 'CI/CD', cls: 'tag-orange' }],
-    snippet: `# Deploy all rules in /rules directory
+    lang: 'python',
+    tagline: 'Deploy KQL analytic rules to Microsoft Sentinel via CI/CD.',
+    link: 'https://github.com/yololabs/sentinel-deploy',
+    snippet: `# deploy all rules in /rules to a sentinel workspace
 python deploy.py \\
   --workspace-id $WORKSPACE_ID \\
   --resource-group $RG \\
   --rules-dir ./rules \\
   --dry-run`,
-    link: 'https://github.com/yololabs/sentinel-deploy',
   },
   {
+    id: 'azpol-lint',
     name: 'azpol-lint',
-    title: 'Azure Policy Linter',
-    tagline: 'Validate Azure Policy definitions locally before deploying. Catches common errors and anti-patterns.',
-    lang: 'Go',
-    stars: '63',
-    tags: [{ label: 'Azure Policy', cls: 'tag-orange' }, { label: 'CLI', cls: 'tag-blue' }],
-    snippet: `# Lint all policy files in a directory
+    lang: 'go',
+    tagline: 'Validate Azure Policy definitions locally before deploying.',
+    link: 'https://github.com/yololabs/azpol-lint',
+    snippet: `# lint all policy files
 azpol-lint ./policies/
 
-# Lint against a specific initiative
+# lint against a specific initiative
 azpol-lint --initiative ./initiatives/cis-l1.json ./policies/`,
-    link: 'https://github.com/yololabs/azpol-lint',
   },
 ];
 ---
 
-<Layout title="Tools" description="Open source security and infrastructure tools from YoloLabs.">
+<Layout title="Tools">
+  <div class="container">
 
-  <section class="section">
-    <div class="container">
-      <p class="section-title">// open source</p>
-      <h1 class="section-heading">Tools</h1>
-      <p class="section-subtitle">
-        Utilities we built to scratch our own itches. All open source, all MIT licensed.
-        Pull requests welcome.
-      </p>
-
-      <div class="tools-grid">
-        {tools.map(tool => (
-          <div class="tool-card">
-            <div class="tool-header">
-              <div>
-                <div class="tool-meta">
-                  {tool.tags.map(t => <span class={`tag ${t.cls}`}>{t.label}</span>)}
-                  <span class="lang-badge">{tool.lang}</span>
-                  <span class="stars">★ {tool.stars}</span>
-                </div>
-                <h2>{tool.title}</h2>
-                <p class="tool-tagline">{tool.tagline}</p>
-              </div>
-              <a href={tool.link} target="_blank" rel="noopener" class="btn btn-outline tool-btn">
-                GitHub →
-              </a>
-            </div>
-            <div class="tool-snippet">
-              <div class="snippet-header">
-                <span class="snippet-name">{tool.name}</span>
-                <span class="snippet-lang">{tool.lang.toLowerCase()}</span>
-              </div>
-              <pre><code>{tool.snippet}</code></pre>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div class="contribute-cta card">
-        <h3>Have an idea for a tool?</h3>
-        <p>We're always looking for problems worth automating. Open an issue or reach out directly.</p>
-        <div style="display:flex; gap:1rem; margin-top:1rem; flex-wrap:wrap;">
-          <a href="https://github.com/yololabs" target="_blank" rel="noopener" class="btn btn-primary">Browse GitHub →</a>
-          <a href="mailto:hello@yololabs.org" class="btn btn-outline">Get in Touch</a>
-        </div>
-      </div>
+    <div class="page-header">
+      <p class="label">// open source</p>
+      <p class="sub">utilities we built for ourselves. mit licensed, pull requests welcome.</p>
     </div>
-  </section>
 
+    <div class="tools">
+      {tools.map(t => (
+        <div class="tool" id={t.id}>
+          <div class="tool-head">
+            <div>
+              <div class="tool-name-row">
+                <span class="tool-name">{t.name}</span>
+                <span class="tool-lang">{t.lang}</span>
+              </div>
+              <p class="tool-tagline">{t.tagline}</p>
+            </div>
+            <a href={t.link} target="_blank" rel="noopener" class="btn">github →</a>
+          </div>
+          <div class="snippet">
+            <div class="snippet-bar">
+              <span>{t.name}</span>
+              <span class="snippet-lang">{t.lang}</span>
+            </div>
+            <pre><code>{t.snippet}</code></pre>
+          </div>
+        </div>
+      ))}
+    </div>
+
+  </div>
 </Layout>
 
 <style>
-  .tools-grid {
+  .container { padding-top: 3rem; padding-bottom: 3rem; }
+
+  .page-header { margin-bottom: 2.5rem; }
+
+  .label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+
+  .sub { font-size: 0.8rem; color: var(--muted); }
+
+  .tools { display: flex; flex-direction: column; gap: 2.5rem; }
+
+  .tool {}
+
+  .tool-head {
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .tool-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.75rem;
-    transition: border-color 0.2s;
-  }
-
-  .tool-card:hover { border-color: var(--accent-blue); }
-
-  .tool-header {
-    display: flex;
-    justify-content: space-between;
     align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .tool-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.6rem;
-  }
-
-  .lang-badge {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    border: 1px solid var(--border);
-    padding: 0.15rem 0.5rem;
-    border-radius: 3px;
-  }
-
-  .stars {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--accent-orange);
-  }
-
-  .tool-card h2 { font-size: 1.2rem; margin-bottom: 0.4rem; }
-
-  .tool-tagline { color: var(--text-secondary); font-size: 0.9rem; }
-
-  .tool-btn { flex-shrink: 0; }
-
-  .tool-snippet { border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
-
-  .snippet-header {
-    display: flex;
-    align-items: center;
     justify-content: space-between;
-    background: var(--bg-tertiary);
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+    margin-bottom: 0.85rem;
   }
 
-  .snippet-name { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); }
+  .tool-name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.85rem;
+    margin-bottom: 0.2rem;
+  }
 
-  .snippet-lang { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
+  .tool-name { font-size: 0.88rem; font-weight: 600; color: var(--blue); }
 
-  .tool-snippet pre {
+  .tool-lang { font-size: 0.7rem; color: var(--muted); }
+
+  .tool-tagline { font-size: 0.78rem; color: var(--muted); }
+
+  /* snippet */
+  .snippet {
+    border: 1px solid var(--faint);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .snippet-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 1rem;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--faint);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .snippet-lang { color: var(--faint); }
+
+  .snippet pre {
     border: none;
     border-radius: 0;
+    padding: 0.9rem 1.1rem;
     margin: 0;
-    padding: 1rem 1.25rem;
-    background: #0d1117;
-    color: var(--accent-green);
-    font-size: 0.825rem;
+    font-size: 0.78rem;
+    color: var(--green);
+    background: var(--bg);
+    border-left: none;
   }
-
-  .contribute-cta {
-    text-align: center;
-    padding: 2.5rem;
-    margin-top: 1rem;
-  }
-
-  .contribute-cta h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
-
-  .contribute-cta p { color: var(--text-secondary); }
 </style>

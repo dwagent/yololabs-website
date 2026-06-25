@@ -3,178 +3,162 @@ import Layout from '../layouts/Layout.astro';
 
 const projects = [
   {
-    id: 'zt-framework',
-    title: 'Enterprise Zero Trust Framework',
-    status: 'live',
-    statusLabel: '● Production',
-    tags: [{ label: 'Zero Trust', cls: 'tag-blue' }, { label: 'Identity', cls: 'tag-purple' }],
-    summary: 'End-to-end Zero Trust implementation for a 1,200-user hybrid environment spanning on-prem AD and Azure.',
-    problem: 'Organization had implicit trust throughout their network — any device on the LAN could reach critical resources. After a near-miss ransomware incident, they needed a fundamentally different model.',
-    approach: 'Designed an identity-centric ZT architecture using Entra ID as the policy engine. Implemented Conditional Access policies covering all cloud apps, deployed Global Secure Access for private app access, and replaced legacy VPN for remote workers.',
-    outcomes: ['Eliminated lateral movement vectors between 23 network segments', 'Reduced attack surface by 67% through app-level access controls', 'Deployed in 90-day phased rollout with zero user-impacting incidents'],
-    stack: ['Entra ID', 'Conditional Access', 'PIM', 'Global Secure Access', 'Intune', 'Defender for Endpoint'],
+    id: 'enterprise-zt-framework',
+    name: 'enterprise-zt-framework',
+    tags: 'zero trust · identity',
+    year: '2025',
+    oss: false,
+    summary: '1,200-user hybrid org. eliminated implicit trust zones across on-prem AD and Azure.',
+    problem: 'Any device on the LAN could reach critical resources. After a near-miss ransomware incident, they needed a fundamentally different model.',
+    approach: 'Identity-centric ZTA using Entra ID as the policy engine. Conditional Access policies for all cloud apps, Global Secure Access replacing legacy VPN, Intune compliance gates for device trust.',
+    outcome: 'Eliminated lateral movement vectors across 23 network segments. 90-day phased rollout with zero user-impacting incidents. Attack surface reduced 67% through app-level access controls.',
+    broke: 'Conditional Access rollout triggered MFA fatigue in week 2. Had to slow down, add targeted exclusions, then tighten back up. Lesson: meter the rollout — don\'t flip the switch all at once.',
+    stack: ['Entra ID', 'Conditional Access', 'PIM', 'Global Secure Access', 'Intune'],
     link: null,
   },
   {
-    id: 'landing-zone',
-    title: 'Azure Secure Landing Zone',
-    status: 'oss',
-    statusLabel: '⬡ Open Source',
-    tags: [{ label: 'Azure', cls: 'tag-orange' }, { label: 'IaC', cls: 'tag-green' }],
-    summary: 'Bicep-based Azure Landing Zone with opinionated security defaults and CIS benchmark compliance enforced at deploy time.',
-    problem: 'Standard ALZ accelerators deploy infrastructure correctly but leave security configuration as a post-deployment afterthought. Security teams spend weeks remediating findings that could have been prevented.',
-    approach: 'Extended the Microsoft ALZ Bicep modules with a security overlay — custom Azure Policy initiatives for CIS Azure Foundations Benchmark, Defender for Cloud auto-provisioning, Log Analytics workspace with 90-day retention, and NSG flow logs enabled by default.',
-    outcomes: ['CIS L1 benchmark compliance on day 0', '100% of new subscriptions inherit security baseline automatically', 'Saved an estimated 3 weeks of remediation work per environment'],
+    id: 'azure-secure-alz',
+    name: 'azure-secure-alz',
+    tags: 'azure · iac',
+    year: '2025',
+    oss: true,
+    summary: 'Bicep-based Azure Landing Zone with CIS benchmark compliance enforced at deploy time.',
+    problem: 'Standard ALZ accelerators leave security as a post-deployment afterthought. Teams spend weeks remediating findings that should\'ve been prevented on day 0.',
+    approach: 'Extended the Microsoft ALZ Bicep modules with a security overlay: custom Azure Policy initiatives for CIS Azure Foundations Benchmark, Defender for Cloud auto-provisioning, Log Analytics with 90-day retention, NSG flow logs by default.',
+    outcome: 'CIS L1 compliance on day 0. Every new subscription inherits the security baseline automatically. Eliminated ~3 weeks of remediation work per environment.',
+    broke: 'Azure Policy deny effects blocked a legitimate legacy workload migration in environment 3. Had to scope the deny policy to exclude specific resource groups. Blanket deny enforcement without careful scope management will burn you.',
     stack: ['Bicep', 'Azure Policy', 'Defender for Cloud', 'Log Analytics', 'GitHub Actions'],
-    link: 'https://github.com/yololabs/azure-secure-alz',
+    link: 'https://github.com/dwagent/yololabs-website',
   },
   {
-    id: 'sentinel-rules',
-    title: 'Sentinel Detection Library',
-    status: 'oss',
-    statusLabel: '⬡ Open Source',
-    tags: [{ label: 'Detection', cls: 'tag-green' }, { label: 'KQL', cls: 'tag-blue' }],
-    summary: '50+ production-tested Microsoft Sentinel analytic rules covering the most common attack paths, mapped to MITRE ATT&CK.',
+    id: 'sentinel-detections',
+    name: 'sentinel-detections',
+    tags: 'detection · kql',
+    year: '2024',
+    oss: true,
+    summary: '50+ production-tested KQL analytic rules covering credential attacks, lateral movement, and exfiltration. Mapped to MITRE ATT&CK.',
     problem: 'Sentinel ships with generic detection rules that generate enormous alert volumes. SOC teams spend hours triaging false positives instead of investigating real threats.',
-    approach: 'Built a library of high-fidelity KQL rules tuned against real telemetry. Each rule includes a MITRE ATT&CK mapping, expected false positive rate, tuning guidance, and a synthetic test case. Rules are structured as Bicep/ARM templates for deployment-as-code.',
-    outcomes: ['Average false positive rate under 5% in production environments', '12 rules contributed back to the Microsoft Sentinel community', 'Covers 18 distinct MITRE ATT&CK techniques'],
+    approach: 'Built a library of high-fidelity KQL rules tuned against real telemetry. Each rule includes MITRE ATT&CK mapping, expected false positive rate, tuning guidance, and a synthetic test case. Structured as Bicep/ARM templates for deployment-as-code.',
+    outcome: 'Average false positive rate under 5% in production environments. 12 rules contributed back to the Microsoft Sentinel community. Covers 18 distinct ATT&CK techniques.',
+    broke: 'Three rules that looked perfect in dev generated 400+ alerts per day in production due to a noisy data source we hadn\'t accounted for. Always test detection rules against a production data sample, not a dev workspace with clean data.',
     stack: ['KQL', 'Microsoft Sentinel', 'MITRE ATT&CK', 'Bicep', 'Python'],
     link: 'https://github.com/yololabs/sentinel-detections',
   },
   {
-    id: 'identity-review',
-    title: 'Entra Permission Auditor',
-    status: 'tool',
-    statusLabel: '⚙ Tool',
-    tags: [{ label: 'Identity', cls: 'tag-purple' }, { label: 'Graph API', cls: 'tag-blue' }],
-    summary: 'PowerShell module that surfaces over-privileged identities, orphaned app registrations, and risky Conditional Access gaps in Entra ID.',
-    problem: 'Entra ID tenants accumulate technical debt quickly — service principals with Global Admin, app registrations with expired creds still active, and Conditional Access policies with broad exclusions that were "temporary fixes."',
-    approach: 'Built a PowerShell module using the Microsoft Graph API to query and analyze permissions. Outputs a prioritized risk report with remediation guidance. Runs non-destructively with Reader permissions only.',
-    outcomes: ['Found 47 over-privileged service principals in first run against a production tenant', 'Identified 3 Conditional Access exclusion groups that had not been reviewed in 18+ months', 'Deployed as a monthly Azure Automation runbook for continuous visibility'],
+    id: 'entra-auditor',
+    name: 'entra-auditor',
+    tags: 'identity · graph api',
+    year: '2024',
+    oss: true,
+    summary: 'PowerShell module that surfaces over-privileged identities and risky Conditional Access gaps in Entra ID.',
+    problem: 'Every Entra ID tenant we\'ve audited has the same issues: service principals with Global Admin, orphaned app registrations, CA exclusions that were "temporary." They never get cleaned up.',
+    approach: 'PowerShell module using Microsoft Graph API to query and analyze permissions. Outputs a prioritized risk report with remediation guidance. Read-only, no destructive operations — runs with Reader permissions.',
+    outcome: 'Found 47 over-privileged service principals on first run against a production tenant. Identified 3 CA exclusion groups not reviewed in 18+ months. Now deployed as a monthly Azure Automation runbook.',
+    broke: 'Graph API throttling at scale. For tenants with 10k+ objects, naive parallel requests hit rate limits immediately. Had to implement exponential backoff and batch pagination. The Graph SDK handles some of this, but not all.',
     stack: ['PowerShell', 'Microsoft Graph API', 'Entra ID', 'Azure Automation'],
     link: 'https://github.com/yololabs/entra-auditor',
   },
 ];
 ---
 
-<Layout title="Projects" description="YoloLabs security and infrastructure projects — Zero Trust, Azure, detection engineering.">
+<Layout title="Projects">
+  <div class="container">
 
-  <section class="section">
-    <div class="container">
-      <p class="section-title">// our work</p>
-      <h1 class="section-heading">Projects</h1>
-      <p class="section-subtitle">
-        Every project below includes the problem we were solving, our approach, and measurable outcomes.
-        We don't list skills — we show work.
-      </p>
-
-      <div class="filter-bar">
-        <span class="filter-label">filter:</span>
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="oss">Open Source</button>
-        <button class="filter-btn" data-filter="live">Production</button>
-        <button class="filter-btn" data-filter="tool">Tools</button>
-      </div>
-
-      <div class="projects-list">
-        {projects.map((p) => (
-          <article class="project" id={p.id} data-status={p.status}>
-            <div class="project-header">
-              <div class="project-header-left">
-                <div class="project-badges">
-                  {p.tags.map(t => <span class={`tag ${t.cls}`}>{t.label}</span>)}
-                  <span class={`status-badge status-${p.status}`}>{p.statusLabel}</span>
-                </div>
-                <h2>{p.title}</h2>
-                <p class="project-summary">{p.summary}</p>
-              </div>
-              {p.link && (
-                <a href={p.link} target="_blank" rel="noopener" class="btn btn-outline project-link">
-                  View on GitHub →
-                </a>
-              )}
-            </div>
-
-            <div class="project-body">
-              <div class="project-section">
-                <h3><span class="label-icon">◆</span> Problem</h3>
-                <p>{p.problem}</p>
-              </div>
-              <div class="project-section">
-                <h3><span class="label-icon">◆</span> Approach</h3>
-                <p>{p.approach}</p>
-              </div>
-              <div class="project-section">
-                <h3><span class="label-icon">◆</span> Outcomes</h3>
-                <ul>
-                  {p.outcomes.map(o => <li>{o}</li>)}
-                </ul>
-              </div>
-            </div>
-
-            <div class="project-footer">
-              <span class="stack-label">Stack:</span>
-              {p.stack.map(s => <span class="stack-item">{s}</span>)}
-            </div>
-          </article>
-        ))}
-      </div>
+    <div class="page-header">
+      <p class="label">// our work</p>
+      <p class="sub">problem → approach → outcome → what broke. in that order.</p>
     </div>
-  </section>
 
+    <ul class="project-index">
+      {projects.map(p => (
+        <li>
+          <a href={`#${p.id}`} class="idx-name">{p.name}</a>
+          <span class="idx-tags">{p.tags}</span>
+          <span class="idx-year">{p.year}</span>
+          {p.oss && <span class="idx-oss">oss</span>}
+        </li>
+      ))}
+    </ul>
+
+    <hr />
+
+    {projects.map(p => (
+      <article class="project" id={p.id}>
+        <div class="proj-head">
+          <div>
+            <h2>{p.name}</h2>
+            <p class="proj-summary">{p.summary}</p>
+          </div>
+          {p.link && (
+            <a href={p.link} target="_blank" rel="noopener" class="btn">github →</a>
+          )}
+        </div>
+
+        <div class="proj-body">
+          <div class="proj-row">
+            <span class="row-label">problem</span>
+            <p>{p.problem}</p>
+          </div>
+          <div class="proj-row">
+            <span class="row-label">approach</span>
+            <p>{p.approach}</p>
+          </div>
+          <div class="proj-row">
+            <span class="row-label">outcome</span>
+            <p>{p.outcome}</p>
+          </div>
+          <div class="proj-row broke">
+            <span class="row-label">what broke</span>
+            <p>{p.broke}</p>
+          </div>
+          <div class="proj-row">
+            <span class="row-label">stack</span>
+            <p class="stack-line">{p.stack.join(' · ')}</p>
+          </div>
+        </div>
+      </article>
+    ))}
+
+  </div>
 </Layout>
 
 <style>
-  .filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
-  }
+  .container { padding-top: 3rem; padding-bottom: 3rem; }
 
-  .filter-label {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--text-muted);
-  }
+  .page-header { margin-bottom: 2rem; }
 
-  .filter-btn {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    padding: 0.3rem 0.8rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+  .label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 0.3rem; }
 
-  .filter-btn:hover,
-  .filter-btn.active {
-    border-color: var(--accent-blue);
-    color: var(--accent-blue);
-    background: rgba(88,166,255,0.06);
-  }
+  .sub { font-size: 0.8rem; color: var(--muted); }
 
-  .projects-list {
+  /* index */
+  .project-index {
+    list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 0.4rem;
+    margin-bottom: 2.5rem;
   }
 
-  .project {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 2rem;
-    transition: border-color 0.2s;
+  .project-index li {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    font-size: 0.8rem;
   }
 
-  .project:hover { border-color: var(--accent-blue); }
+  .idx-name { color: var(--blue); min-width: 26ch; flex-shrink: 0; }
+  .idx-name:hover { text-decoration: none; opacity: 0.8; }
+  .idx-tags { color: var(--muted); flex: 1; font-size: 0.75rem; }
+  .idx-year { color: var(--muted); font-size: 0.75rem; flex-shrink: 0; }
+  .idx-oss  { color: var(--green); font-size: 0.7rem; flex-shrink: 0; }
 
-  .project-header {
+  hr { margin: 2rem 0; }
+
+  /* project detail */
+  .project { margin-bottom: 3.5rem; scroll-margin-top: 4rem; }
+
+  .proj-head {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -182,115 +166,44 @@ const projects = [
     margin-bottom: 1.5rem;
   }
 
-  .project-badges {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.75rem;
+  .project h2 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.2rem;
   }
 
-  .status-badge {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 3px;
-  }
+  .proj-summary { font-size: 0.78rem; color: var(--muted); }
 
-  .status-live  { color: var(--accent-green); background: rgba(63,185,80,0.08); }
-  .status-oss   { color: var(--accent-blue);  background: rgba(88,166,255,0.08); }
-  .status-tool  { color: var(--accent-orange); background: rgba(240,136,62,0.08); }
-
-  .project h2 { font-size: 1.4rem; margin-bottom: 0.5rem; }
-
-  .project-summary { color: var(--text-secondary); font-size: 0.95rem; }
-
-  .project-link { flex-shrink: 0; }
-
-  .project-body {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
-    padding: 1.5rem 0;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 1.25rem;
-  }
-
-  .project-section h3 {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .label-icon { color: var(--accent-blue); font-size: 0.6rem; }
-
-  .project-section p { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.7; }
-
-  .project-section ul {
-    list-style: none;
+  .proj-body {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .project-section li {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
+    gap: 0.85rem;
+    border-left: 1px solid var(--faint);
     padding-left: 1.25rem;
-    position: relative;
   }
 
-  .project-section li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: var(--accent-green);
-    font-size: 0.75rem;
+  .proj-row { display: flex; gap: 1.5rem; font-size: 0.8rem; }
+
+  .row-label {
+    color: var(--muted);
+    min-width: 9ch;
+    flex-shrink: 0;
+    padding-top: 0.05rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
   }
 
-  .project-footer {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
+  .proj-row p { color: var(--text); line-height: 1.75; }
 
-  .stack-label {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-  }
+  .proj-row.broke .row-label { color: var(--red); }
+  .proj-row.broke p { color: var(--text); }
 
-  .stack-item {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    padding: 0.15rem 0.5rem;
-    border-radius: 3px;
+  .stack-line { color: var(--muted) !important; font-size: 0.75rem; }
+
+  @media (max-width: 540px) {
+    .proj-row { flex-direction: column; gap: 0.2rem; }
+    .row-label { min-width: unset; }
+    .project-index li { flex-wrap: wrap; }
   }
 </style>
-
-<script>
-  const btns = document.querySelectorAll('.filter-btn');
-  const projects = document.querySelectorAll('.project');
-
-  btns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      btns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.dataset.filter;
-      projects.forEach(p => {
-        const show = filter === 'all' || p.dataset.status === filter;
-        (p as HTMLElement).style.display = show ? 'block' : 'none';
-      });
-    });
-  });
-</script>

@@ -1,365 +1,141 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Terminal from '../components/Terminal.astro';
+
+const posts = [
+  { date: '2026-06-10', title: 'Why Most Zero Trust Implementations Fail', slug: 'why-zero-trust-fails' },
+  { date: '2026-05-22', title: 'Building a Security-First Azure Landing Zone in 2026', slug: 'azure-landing-zone-security' },
+  { date: '2026-04-15', title: 'KQL Detection Patterns That Actually Reduce Alert Fatigue', slug: 'kql-detection-patterns' },
+];
+
+const projects = [
+  { name: 'enterprise-zt-framework', tags: 'zero trust · entra id',    year: '2025', href: '/projects#enterprise-zt-framework' },
+  { name: 'azure-secure-alz',        tags: 'azure landing zone · bicep', year: '2025', href: '/projects#azure-secure-alz' },
+  { name: 'sentinel-detections',     tags: 'microsoft sentinel · kql',  year: '2024', href: '/projects#sentinel-detections' },
+  { name: 'entra-auditor',           tags: 'powershell · graph api',    year: '2024', href: '/projects#entra-auditor' },
+];
 ---
 
-<Layout title="Home" description="YoloLabs — Security engineering, Zero Trust architecture, and Azure infrastructure projects.">
+<Layout title="Home">
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero-badge">
-        <span class="pulse"></span>
-        Open to opportunities
-      </div>
-      <h1 class="hero-title">
-        We build<br />
-        <span class="hero-accent">secure infrastructure</span><br />
-        that actually works.
-      </h1>
-      <p class="hero-subtitle">
-        A crew of security engineers and infrastructure architects who got tired of waiting for someone else to fix it.
-        Zero Trust, Azure, and everything in between.
-      </p>
-      <div class="hero-actions">
-        <a href="/projects" class="btn btn-primary">View Our Work →</a>
-        <a href="/about" class="btn btn-outline">Meet the Team</a>
-      </div>
-      <div class="hero-terminal">
-        <div class="terminal-header">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="terminal-title">yololabs ~ zsh</span>
-        </div>
-        <div class="terminal-body">
-          <div class="terminal-line">
-            <span class="prompt">❯</span>
-            <span class="cmd"> whoami</span>
-          </div>
-          <div class="terminal-line output">security-engineers, infra-architects, zero-trust-believers</div>
-          <div class="terminal-line">
-            <span class="prompt">❯</span>
-            <span class="cmd"> cat expertise.txt</span>
-          </div>
-          <div class="terminal-line output">Zero Trust Architecture  │  Azure Landing Zones</div>
-          <div class="terminal-line output">Identity &amp; Access Mgmt   │  Cloud Security Posture</div>
-          <div class="terminal-line output">Threat Modeling          │  Incident Response</div>
-          <div class="terminal-line">
-            <span class="prompt">❯</span>
-            <span class="cmd"> <span class="cursor">█</span></span>
-          </div>
-        </div>
-      </div>
+  <div class="container">
+
+    <div class="intro">
+      <p class="tagline">security engineering collective.</p>
+      <p class="sub">zero trust architecture, azure infrastructure, detection engineering.</p>
     </div>
-  </section>
 
-  <!-- Focus Areas -->
-  <section class="section">
-    <div class="container">
-      <p class="section-title">// what we do</p>
-      <h2 class="section-heading">Our Focus Areas</h2>
-      <p class="section-subtitle">We specialize in the intersection of modern security architecture and cloud infrastructure — where most breaches actually happen.</p>
-      <div class="grid-3">
-        <div class="focus-card">
-          <div class="focus-icon">🔐</div>
-          <h3>Zero Trust Architecture</h3>
-          <p>Identity-first security models. Never trust, always verify — applied to real enterprise environments, not just slide decks.</p>
-          <div class="tags">
-            <span class="tag tag-blue">Entra ID</span>
-            <span class="tag tag-blue">Conditional Access</span>
-            <span class="tag tag-blue">PIM</span>
-          </div>
-        </div>
-        <div class="focus-card">
-          <div class="focus-icon">☁️</div>
-          <h3>Azure Infrastructure</h3>
-          <p>Landing zones, policy-as-code, and governance frameworks. Infrastructure that's secure from the start, not bolted on afterward.</p>
-          <div class="tags">
-            <span class="tag tag-orange">Bicep / Terraform</span>
-            <span class="tag tag-orange">Azure Policy</span>
-            <span class="tag tag-orange">Defender for Cloud</span>
-          </div>
-        </div>
-        <div class="focus-card">
-          <div class="focus-icon">🛡️</div>
-          <h3>Security Operations</h3>
-          <p>Detection engineering, Sentinel SIEM, KQL queries that actually fire on real threats. Built by engineers who've been on-call at 2am.</p>
-          <div class="tags">
-            <span class="tag tag-green">Microsoft Sentinel</span>
-            <span class="tag tag-green">KQL</span>
-            <span class="tag tag-green">SOAR</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <Terminal />
 
-  <hr class="divider" />
+    <hr />
 
-  <!-- Featured Projects -->
-  <section class="section">
-    <div class="container">
-      <p class="section-title">// featured work</p>
-      <h2 class="section-heading">Recent Projects</h2>
-      <p class="section-subtitle">A sample of what we've been building. Full write-ups with architecture diagrams on the projects page.</p>
-      <div class="grid-2">
-        <a href="/projects#zt-framework" class="project-card card">
-          <div class="project-meta">
-            <span class="tag tag-blue">Zero Trust</span>
-            <span class="project-status live">● live</span>
-          </div>
-          <h3>Enterprise ZT Framework</h3>
-          <p>End-to-end Zero Trust implementation for a 1,200-user hybrid environment. Reduced lateral movement risk by eliminating implicit trust zones across on-prem and Azure workloads.</p>
-          <div class="project-stack">
-            <span>Entra ID</span> · <span>Global Secure Access</span> · <span>Intune</span>
-          </div>
-        </a>
-        <a href="/projects#landing-zone" class="project-card card">
-          <div class="project-meta">
-            <span class="tag tag-orange">Azure</span>
-            <span class="project-status oss">⬡ open source</span>
-          </div>
-          <h3>Azure Secure Landing Zone</h3>
-          <p>Bicep-based ALZ with opinionated security defaults. Policy-as-code for CIS benchmark compliance, automated at deploy time rather than audited after the fact.</p>
-          <div class="project-stack">
-            <span>Bicep</span> · <span>Azure Policy</span> · <span>Defender for Cloud</span>
-          </div>
-        </a>
-        <a href="/projects#sentinel-rules" class="project-card card">
-          <div class="project-meta">
-            <span class="tag tag-green">Detection</span>
-            <span class="project-status oss">⬡ open source</span>
-          </div>
-          <h3>Sentinel Detection Library</h3>
-          <p>50+ production-tested KQL analytic rules covering credential attacks, lateral movement, and exfiltration TTPs. Mapped to MITRE ATT&amp;CK.</p>
-          <div class="project-stack">
-            <span>KQL</span> · <span>Microsoft Sentinel</span> · <span>MITRE ATT&amp;CK</span>
-          </div>
-        </a>
-        <a href="/projects#identity-review" class="project-card card">
-          <div class="project-meta">
-            <span class="tag tag-purple">Identity</span>
-            <span class="project-status tool">⚙ tool</span>
-          </div>
-          <h3>Entra Permission Auditor</h3>
-          <p>PowerShell + Graph API tool for surfacing over-privileged service principals, orphaned app registrations, and risky Conditional Access gaps.</p>
-          <div class="project-stack">
-            <span>Graph API</span> · <span>PowerShell</span> · <span>Entra ID</span>
-          </div>
-        </a>
-      </div>
-      <div class="view-all">
-        <a href="/projects" class="btn btn-outline">View All Projects →</a>
-      </div>
-    </div>
-  </section>
+    <section class="list-section">
+      <p class="label">// recent writing</p>
+      <ul class="plain-list">
+        {posts.map(p => (
+          <li>
+            <span class="row-date">{p.date}</span>
+            <a href={`/blog/${p.slug}`}>{p.title}</a>
+          </li>
+        ))}
+      </ul>
+      <a href="/blog" class="more-link">all posts →</a>
+    </section>
 
-  <hr class="divider" />
+    <hr />
 
-  <!-- Stats -->
-  <section class="section stats-section">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat">
-          <div class="stat-number">15+</div>
-          <div class="stat-label">Years combined experience</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number">50+</div>
-          <div class="stat-label">Detection rules published</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number">3</div>
-          <div class="stat-label">Open source projects</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number">0</div>
-          <div class="stat-label">Times we've trusted implicit access</div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <section class="list-section">
+      <p class="label">// recent work</p>
+      <ul class="plain-list project-list">
+        {projects.map(p => (
+          <li>
+            <a href={p.href} class="proj-name">{p.name}</a>
+            <span class="proj-tags">{p.tags}</span>
+          </li>
+        ))}
+      </ul>
+      <a href="/projects" class="more-link">all projects →</a>
+    </section>
 
-  <!-- CTA -->
-  <section class="section cta-section">
-    <div class="container">
-      <div class="cta-box">
-        <p class="section-title">// let's talk</p>
-        <h2>Working on something hard?</h2>
-        <p>We're available for consulting engagements, architecture reviews, and pair-programming sessions on gnarly security problems.</p>
-        <a href="mailto:hello@yololabs.org" class="btn btn-primary">Get in Touch →</a>
-      </div>
-    </div>
-  </section>
+  </div>
 
 </Layout>
 
 <style>
-  .hero {
-    padding: 6rem 0 4rem;
-    position: relative;
-    overflow: hidden;
+  .container { padding-top: 3rem; padding-bottom: 3rem; }
+
+  .intro { margin-bottom: 2.5rem; }
+
+  .tagline {
+    font-size: 1rem;
+    color: var(--text);
+    font-weight: 500;
   }
 
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(88,166,255,0.08) 0%, transparent 70%);
-    pointer-events: none;
+  .sub {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
   }
 
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
+  hr { margin: 3rem 0; }
+
+  .list-section { padding: 0; }
+
+  .label {
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .plain-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--accent-green);
-    border: 1px solid rgba(63,185,80,0.3);
-    background: rgba(63,185,80,0.06);
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
 
-  .pulse {
-    width: 8px; height: 8px;
-    background: var(--accent-green);
-    border-radius: 50%;
-    animation: pulse 2s ease infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.5; transform: scale(0.8); }
-  }
-
-  .hero-title {
-    font-size: clamp(2.2rem, 5vw, 3.5rem);
-    line-height: 1.15;
-    margin-bottom: 1.25rem;
-  }
-
-  .hero-accent { color: var(--accent-blue); }
-
-  .hero-subtitle {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    max-width: 580px;
-    margin-bottom: 2rem;
-  }
-
-  .hero-actions {
+  .plain-list li {
     display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 3rem;
+    align-items: baseline;
+    gap: 1.25rem;
+    font-size: 0.82rem;
   }
 
-  .hero-terminal {
-    max-width: 600px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
+  .row-date {
+    color: var(--muted);
+    flex-shrink: 0;
+    font-size: 0.75rem;
   }
 
-  .terminal-header {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.75rem 1rem;
-    background: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border);
+  .plain-list a { color: var(--text); }
+  .plain-list a:hover { color: var(--blue); text-decoration: none; }
+
+  /* project list */
+  .project-list li { gap: 0; }
+
+  .proj-name {
+    min-width: 30ch;
+    color: var(--blue) !important;
+    flex-shrink: 0;
   }
 
-  .dot { width: 12px; height: 12px; border-radius: 50%; }
-  .dot.red    { background: #ff5f56; }
-  .dot.yellow { background: #ffbd2e; }
-  .dot.green  { background: #27c93f; }
-
-  .terminal-title { margin-left: 0.5rem; font-size: 0.75rem; color: var(--text-muted); }
-  .terminal-body  { padding: 1rem 1.25rem; }
-
-  .terminal-line          { line-height: 1.8; color: var(--text-secondary); }
-  .terminal-line .prompt  { color: var(--accent-green); }
-  .terminal-line .cmd     { color: var(--text-primary); }
-  .terminal-line.output   { color: var(--text-secondary); padding-left: 1.2rem; }
-
-  .cursor { animation: blink 1s step-end infinite; }
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-  .focus-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.75rem;
-    transition: border-color 0.2s, transform 0.2s;
+  .proj-tags {
+    color: var(--muted);
+    font-size: 0.75rem;
   }
 
-  .focus-card:hover { border-color: var(--accent-blue); transform: translateY(-2px); }
-
-  .focus-icon { font-size: 2rem; margin-bottom: 1rem; }
-
-  .focus-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
-
-  .focus-card p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; }
-
-  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-
-  .project-card { display: block; color: inherit; text-decoration: none; }
-
-  .project-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
+  .more-link {
+    font-size: 0.75rem;
+    color: var(--muted);
   }
 
-  .project-status { font-family: var(--font-mono); font-size: 0.75rem; }
-  .project-status.live { color: var(--accent-green); }
-  .project-status.oss  { color: var(--accent-blue); }
-  .project-status.tool { color: var(--accent-orange); }
+  .more-link:hover { color: var(--text); text-decoration: none; }
 
-  .project-card h3 { font-size: 1.05rem; margin-bottom: 0.5rem; }
-
-  .project-card p { color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem; }
-
-  .project-stack { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
-
-  .view-all { margin-top: 2rem; text-align: center; }
-
-  .stats-section { text-align: center; }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 2rem;
+  @media (max-width: 480px) {
+    .project-list li { flex-direction: column; gap: 0.1rem; }
+    .proj-name { min-width: unset; }
   }
-
-  .stat-number {
-    font-family: var(--font-mono);
-    font-size: 3rem;
-    font-weight: 600;
-    color: var(--accent-blue);
-    line-height: 1;
-    margin-bottom: 0.5rem;
-  }
-
-  .stat-label { color: var(--text-secondary); font-size: 0.875rem; }
-
-  .cta-box {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 3rem;
-    text-align: center;
-  }
-
-  .cta-box h2 { font-size: 2rem; margin-bottom: 0.75rem; }
-
-  .cta-box p { color: var(--text-secondary); max-width: 480px; margin: 0 auto 1.5rem; }
 </style>
