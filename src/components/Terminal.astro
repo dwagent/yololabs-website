@@ -198,8 +198,6 @@
       '  <span class="g">open &lt;thing&gt;</span>    open github | linkedin | now | log',
       '  <span class="g">ls</span>                list pages',
       '  <span class="g">clear</span>             clear terminal',
-      '',
-      '  <span class="dim">try: sudo, nmap, ssh, ping, hack</span>',
     ].join('\n'),
 
     whoami: () => [
@@ -273,141 +271,6 @@
       return `<span class="err">don't know how to open: ${esc(t ?? '')}. try: open github | linkedin | now | log</span>`;
     },
 
-    // ── easter eggs ────────────────────────────────────────────────────
-
-    sudo: (args) => {
-      const subcmd = args.join(' ');
-      if (subcmd.includes('rm') && subcmd.includes('-rf')) {
-        return [
-          '<span class="err">Permission denied.</span>',
-          '',
-          '  we run least-privilege here. nice try.',
-          '  you would need: sudo privileges, a change ticket, two approvals,',
-          '  a maintenance window, and a rollback plan.',
-          '',
-          `  <span class="dim">this is not a test environment.</span>`,
-        ].join('\n');
-      }
-      return [
-        '<span class="err">sudo: command not found</span>',
-        '<span class="dim">if you need elevated access, open a ticket like everyone else</span>',
-      ].join('\n');
-    },
-
-    nmap: (args) => {
-      const target = args[0] || 'localhost';
-      const isLocal = target === 'localhost' || target === '127.0.0.1';
-      if (isLocal) {
-        return [
-          `Starting Nmap 7.95 ( https://nmap.org )`,
-          `Nmap scan report for ${target} (127.0.0.1)`,
-          `Host is up (0.000042s latency).`,
-          '',
-          `PORT     STATE  SERVICE`,
-          `22/tcp   open   ssh`,
-          `443/tcp  open   https    yololabs.org`,
-          `8080/tcp closed http`,
-          '',
-          `<span class="dim">Nmap done: 1 IP address (1 host up) scanned in 0.12 seconds</span>`,
-          '',
-          `<span class="warn">note: ssh access is mfa-enforced and logs to sentinel. just so you know.</span>`,
-        ].join('\n');
-      }
-      return [
-        `<span class="warn">Starting Nmap 7.95...</span>`,
-        `<span class="err">Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn</span>`,
-        `<span class="dim">Nmap done: 1 IP address (0 hosts up) scanned in 2.04 seconds</span>`,
-        '',
-        `<span class="dim">we don't scan hosts we don't own. authorized targets only.</span>`,
-      ].join('\n');
-    },
-
-    ping: (args) => {
-      const target = args[0] || 'yololabs.org';
-      const isUs = target === 'yololabs.org' || target === 'localhost';
-      if (isUs) {
-        return [
-          `PING ${target}: 56 data bytes`,
-          `64 bytes from ${target}: icmp_seq=0 ttl=57 time=12.3 ms`,
-          `64 bytes from ${target}: icmp_seq=1 ttl=57 time=11.8 ms`,
-          `64 bytes from ${target}: icmp_seq=2 ttl=57 time=12.1 ms`,
-          `64 bytes from ${target}: icmp_seq=3 ttl=57 time=11.9 ms`,
-          '',
-          `--- ${target} ping statistics ---`,
-          `4 packets transmitted, 4 received, 0.0% packet loss`,
-          `round-trip min/avg/max/stddev = 11.8/12.0/12.3/0.2 ms`,
-        ].join('\n');
-      }
-      return [
-        `PING ${esc(target)}: 56 data bytes`,
-        `Request timeout for icmp_seq 0`,
-        `Request timeout for icmp_seq 1`,
-        '',
-        `--- ${esc(target)} ping statistics ---`,
-        `2 packets transmitted, 0 packets received, 100.0% packet loss`,
-        '',
-        `<span class="dim">...or we're just being filtered. who knows.</span>`,
-      ].join('\n');
-    },
-
-    ssh: (args) => {
-      const target = args[0] || '';
-      const isRoot = target.startsWith('root@');
-      return [
-        `<span class="err">ssh: connect to host ${esc(target || 'unknown')} port 22: Connection refused</span>`,
-        '',
-        isRoot
-          ? `<span class="warn">root login is disabled. obviously.</span>`
-          : `<span class="dim">if you have legitimate access, you already know what to do.</span>`,
-      ].join('\n');
-    },
-
-    hack: () => [
-      '<span class="warn">INITIATING HACK SEQUENCE...</span>',
-      '',
-      '  [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%',
-      '',
-      '  <span class="err">ACCESS DENIED</span>',
-      '',
-      `  <span class="dim">this isn't a movie. real attack paths involve:`,
-      `  - credential stuffing on exposed APIs`,
-      `  - phishing for MFA fatigue bypass`,
-      `  - over-privileged service principals`,
-      `  - conditional access exclusion groups nobody reviewed</span>`,
-      '',
-      `  <span class="dim">we wrote a tool that finds those. see: cat entra-auditor</span>`,
-    ].join('\n'),
-
-    whoami_root: () => `<span class="err">you wish</span>`,
-
-    uname: (args) => {
-      if (args[0] === '-a') {
-        return `YoloLabsOS 6.0.0-security #1 SMP PREEMPT_DYNAMIC ZeroTrust/AzurePolicy x86_64 GNU/Linux`;
-      }
-      return `YoloLabsOS`;
-    },
-
-    pwd: () => `/home/yololabs`,
-
-    history: () => {
-      if (!cmdHistory.length) return '<span class="dim">no history yet</span>';
-      return cmdHistory
-        .slice()
-        .reverse()
-        .map((cmd, i) => `  <span class="dim">${String(i + 1).padStart(3)}</span>  ${esc(cmd)}`)
-        .join('\n');
-    },
-
-    exit: () => {
-      return [
-        `<span class="dim">nice try. you can't exit the internet.</span>`,
-        `<span class="dim">close the tab if you must.</span>`,
-      ].join('\n');
-    },
-
-    date: () => new Date().toString(),
-
-    echo: (args) => esc(args.join(' ')),
   };
 
   // ── async search ─────────────────────────────────────────────────────
@@ -482,12 +345,6 @@
       } else {
         out(`<span class="err">no such project: ${esc(key)}</span>\n<span class="dim">run 'projects' to see available names</span>`);
       }
-      return;
-    }
-
-    // handle "whoami root" as a combined token
-    if (cmd === 'whoami' && args[0] === 'root') {
-      out(CMDS['whoami_root']!([]));
       return;
     }
 
